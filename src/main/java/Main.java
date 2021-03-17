@@ -32,7 +32,7 @@ public class Main extends ListenerAdapter {
         MessageChannel channel = event.getChannel();
         if (event.getAuthor().isBot()) return;
         if (event.getMessage().getContentRaw().equals("clean up, kibby")) {
-            deleteFromUser(event.getChannel(), event.getJDA().getSelfUser(), 10);
+            deleteFromUser(event.getChannel(), event.getJDA().getSelfUser(), 5);
             channel.sendMessage("SMOOO!! (cleaning)").queue();
             return;
         }
@@ -55,14 +55,14 @@ public class Main extends ListenerAdapter {
         }
         return msg;
     }
-    private // Delete a number of messages for a specific author (this can be abstracted to any condition)
-    void deleteFromUser(MessageChannel channel, User author, int amount) {
-        List<Message> messages = new ArrayList<>(); // First create a list for your messages
+
+    private void deleteFromUser(MessageChannel channel, User author, int amount) {
+        List<Message> messages = new ArrayList<>();
         channel.getIterableHistory()
-                .forEachAsync(m -> { // Loop over the history and filter messages
-                    if (m.getAuthor().equals(author)) messages.add(m); // Add these messages to a list (your collector)
-                    return messages.size() < amount; // keep going until limit is reached (might be smart to also have a time condition here)
-                }) // This is also a CompletableFuture<Void> so you can chain a callback
-                .thenRun(() -> channel.purgeMessages(messages)); // Run after loop is over, delete the messages in your list
+                .forEachAsync(m -> {
+                    if (m.getAuthor().equals(author)) messages.add(m);
+                    return messages.size() < amount;
+                })
+                .thenRun(() -> channel.purgeMessages(messages));
     }
 }
