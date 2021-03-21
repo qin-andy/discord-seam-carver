@@ -22,6 +22,13 @@ public class Listener extends ListenerAdapter {
             channel.sendMessage("SMOOO!! (cleaning)").queue();
             return;
         }
+        if (event.getMessage().getContentRaw().equals("!carve")) {
+            if (event.getMessage().getAttachments().get(0).isImage()) {
+                // Save image to a path
+                // Pass image path to SeamCarver
+            }
+        }
+
         channel.sendMessage(genResponse()).queue();
     }
 
