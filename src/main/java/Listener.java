@@ -23,10 +23,17 @@ public class Listener extends ListenerAdapter {
             return;
         }
         if (event.getMessage().getContentRaw().equals("!carve")) {
+<<<<<<< Updated upstream
             if (event.getMessage().getAttachments().get(0).isImage()) {
                 // Save image to a path
                 // Pass image path to SeamCarver
             }
+=======
+            String fileName = event.getMessage().getAttachments().get(0).getFileName();
+            System.out.println("Received " + fileName + " from " + event.getAuthor().getName());
+            event.getMessage().getAttachments().get(0).downloadToFile("src/main/resources/images/" + fileName);
+            System.out.println("Smohohmo! (saved)");
+>>>>>>> Stashed changes
         }
 
         channel.sendMessage(genResponse()).queue();
