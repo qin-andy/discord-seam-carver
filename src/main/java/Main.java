@@ -14,7 +14,7 @@ public class Main {
     public static void main(String[] args)
             throws LoginException, InterruptedException
     {
-        String token = "ODE3MjgwNjk2ODI4NTU5Mzgw.YEHN9g.xX6mfDGlUOIcnMCdDq0JIQD0_pc";
+        String token = ""; //TODO: move token retrieval to seperate file
         JDABuilder jda = JDABuilder.createDefault(token)
                 .addEventListeners(new Listener());
         jda.build();
