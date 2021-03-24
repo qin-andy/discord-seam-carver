@@ -8,13 +8,15 @@ public class Carver {
 
     public static void main(String[] args) throws IOException { // For testing
         Carver carver = new Carver();
-        carver.createEnergyArray("src/main/resources/images/cardboard_why.PNG");
+        carver.createEnergyArray("src/main/resources/images/photomode_17122020_211436.PNG");
     }
 
+
     // Creates an energy map from a filepath to an image
-    private int[][] createEnergyArray(String filePath) throws IOException {
+    public int[][] createEnergyArray(String filePath) throws IOException {
         File file = new File(filePath);
         BufferedImage image = ImageIO.read(file);
+        System.out.println(image);
         Color[][] imageRGB = convertToRGB(image);
         createEnergyMap(imageRGB);
 
@@ -30,7 +32,6 @@ public class Carver {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 result[x][y] = new Color(image.getRGB(x, y));
-                System.out.println("Pixel " + x +", " + y + ":" + result[x][y]);
             }
         }
         return result;
