@@ -5,8 +5,11 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
+import java.io.IOException;
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+
 public class Listener extends ListenerAdapter {
     private final SeamCarver carver;
 
@@ -22,13 +25,24 @@ public class Listener extends ListenerAdapter {
                 ": " +
                 event.getMessage()
         );
-        MessageChannel channel = event.getChannel();
-        if (event.getMessage().getContentRaw().equals("!carve")) {
-            String fileName = event.getMessage().getAttachments().get(0).getFileName();
+        String fileName = event.getMessage().getAttachments().get(0).getFileName();
+        System.out.println("Received " + fileName + " from " + event.getAuthor().getName());
+
+        try {
+            event.getMessage().getAttachments().get(0).downloadToFile("src/main/resources/images/" + fileName).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Smohohmo! (saved)");
+        Carver carver = new Carver();
+        try {
             System.out.println(fileName);
-            File attachment = new File("src/main/resources/images/" + fileName);
-            event.getMessage().getAttachments().get(0).downloadToFile(attachment);
-            System.out.println("Smohohmo! (saved)");
+            carver.createEnergyArray("src/main/resources/images/" + fileName);
+        } catch (IOException e) { //Check this later
+            System.out.print("File not found!");
         }
     }
 }
