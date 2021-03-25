@@ -1,0 +1,6 @@
+# pack-refs with: peeled fully-peeled sorted 
+2f967089f9a3550c0f74b9b786a1bc9f872902e9 refs/heads/energy_mapping
+79863580779dfff7d43a4e684cff204922696faf refs/heads/file_process
+a6ea863a822de241c0670dc7db2fcc9ddad265b6 refs/heads/main
+79863580779dfff7d43a4e684cff204922696faf refs/pull/1/head
+2f967089f9a3550c0f74b9b786a1bc9f872902e9 refs/pull/2/head
