@@ -11,12 +11,6 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 public class Listener extends ListenerAdapter {
-    private final SeamCarver carver;
-
-    public Listener() {
-        carver= new SeamCarver();
-    }
-
 
     public void onMessageReceived(MessageReceivedEvent event) {
         // if (event.getAuthor().isBot()) return;
