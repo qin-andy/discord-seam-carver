@@ -7,11 +7,11 @@ import java.util.Arrays;
 
 public class Carver {
 
+    //TODO: remove testing main statement
     public static void main(String[] args) throws IOException { // For testing
         Carver carver = new Carver();
         carver.createEnergyArray("src/main/resources/images/testpath_small.PNG");
     }
-
 
     // Creates an energy map from a filepath to an image
     public int[][] createEnergyArray(String filePath) throws IOException {
@@ -19,8 +19,13 @@ public class Carver {
         BufferedImage image = ImageIO.read(file);
         System.out.println(image);
         Color[][] imageRGB = convertToRGB(image);
-        shortestSeamPath(createEnergyMap(imageRGB));
+        int[] path = shortestSeamPath(createEnergyMap(imageRGB));
+        for (int y = 0; y < image.getHeight(); y++) {
+            image.setRGB(path[y], y, Color.black.getRGB());
+        }
 
+        File outputfile = new File("src/main/resources/images/newestSave.PNG");
+        ImageIO.write(image, "PNG", outputfile);
         return null;
     }
 
@@ -42,36 +47,56 @@ public class Carver {
         int width = colorArray.length;
         int height = colorArray[0].length;
         int[][] energyArray = new int[width][height];
-        for (int y = 1; y < height - 1; y++) {
-            for (int x = 1; x < width - 1; x++)  {
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++)  {
                 // Typed out for readability
                 // Energy mapping algorithm is Δx^2(x, y) + Δy^2(x, y)
-                Color prev = colorArray[x-1][y];
-                Color next = colorArray[x+1][y];
+                Color prev = null;
+                Color next = null;
+                if (x == 0) {
+                    prev = colorArray[width-1][y];
+                    next = colorArray[x+1][y];
+                } else if (x == width - 1) {
+                    prev = colorArray[x-1][y];
+                    next = colorArray[0][y];
+                } else {
+                    prev = colorArray[x-1][y];
+                    next = colorArray[x+1][y];
+                }
+
                 int deltaR = (int) Math.pow(prev.getRed() - next.getRed(), 2);
                 int deltaG = (int) Math.pow(prev.getGreen() - next.getGreen(), 2);
                 int deltaB = (int) Math.pow(prev.getBlue() - next.getBlue(), 2);
 
                 int xDeltaSquare = deltaR + deltaG + deltaB;
 
-                prev = colorArray[x][y-1];
-                next = colorArray[x][y+1];
+                prev = null;
+                next = null;
+                if (y == 0) {
+                    prev = colorArray[x][height-1];
+                    next = colorArray[x][y+1];
+                } else if (y == height - 1) {
+                    prev = colorArray[x][y-1];
+                    next = colorArray[x][0];
+                } else {
+                    prev = colorArray[x][y];
+                    next = colorArray[x][y];
+                }
+
                 deltaR = (int) Math.pow(prev.getRed() - next.getRed(), 2);
                 deltaG = (int) Math.pow(prev.getGreen() - next.getGreen(), 2);
                 deltaB = (int) Math.pow(prev.getBlue() - next.getBlue(), 2);
 
                 int yDeltaSquare = deltaR + deltaG + deltaB;
                 energyArray[x][y] = xDeltaSquare + yDeltaSquare;
-
-                // Debug to test
-                System.out.print("[" + x +"," + y + ":" + energyArray[x][y] + "] ");
             }
-            System.out.println();
         }
+
         return energyArray;
     }
 
-    private int[][] shortestSeamPath(int[][] energyArray) {
+    //TODO: rename method
+    private int[] shortestSeamPath(int[][] energyArray) {
         int width = energyArray.length;
         int height = energyArray[0].length;
 
@@ -84,10 +109,9 @@ public class Carver {
         }
 
         int newDist = 0;
-        // Traverse through every node in order
+        // Traverse through every node in order for a weighted path tree
         for (int y = 0; y < height - 1; y++) {
             for (int x = 0; x < width; x++) {
-
                 int lower = -1;
                 int upper = 1;
                 if (x == 0) {
@@ -107,12 +131,52 @@ public class Carver {
             }
         }
 
+
+        // TODO: printing the paths, removing this debugging
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 System.out.print("[" + distTo[x][y] + "]");
             }
             System.out.println();
         }
-        return distTo;
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                System.out.print("[" + parent[x][y] + "]");
+            }
+            System.out.println();
+        }
+
+        // Backtracking from the minimum of the last row:
+        // Finding minimum of the last row:
+
+        int minEnergy = distTo[0][height-1];
+        int minX = 0;
+
+        for (int x = 1; x < width; x++) {
+            if (distTo[x][height-1] < minEnergy) {
+                minX = x;
+                minEnergy = distTo[x][height-1];
+            }
+        }
+
+        // Start the minPath array to store the x values of the minimum path, iwth the indecies indicating the y coord
+        int[] minPath = new int[height];
+        minPath[height-1] = minX;
+
+        int childX = minX;
+
+        int parentX;
+        for (int y = height - 1; y > 0; y--) {
+            parentX = parent[childX][y];
+            minPath[y-1] = parentX;
+            childX = parentX;
+        }
+
+        for (int i = 0; i < minPath.length; i++) {
+            System.out.print("(" + minPath[i] + ")");
+        }
+
+
+        return minPath;
     }
 }
