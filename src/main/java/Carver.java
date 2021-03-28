@@ -10,23 +10,67 @@ public class Carver {
     //TODO: remove testing main statement
     public static void main(String[] args) throws IOException { // For testing
         Carver carver = new Carver();
-        carver.createEnergyArray("src/main/resources/images/testpath_small.PNG");
+        carver.carve("src/main/resources/images/hackersmoh.PNG", 200 );
     }
 
     // Creates an energy map from a filepath to an image
-    public int[][] createEnergyArray(String filePath) throws IOException {
+    public int carve(String filePath, int cutSize) throws IOException {
+
         File file = new File(filePath);
         BufferedImage image = ImageIO.read(file);
-        System.out.println(image);
-        Color[][] imageRGB = convertToRGB(image);
-        int[] path = shortestSeamPath(createEnergyMap(imageRGB));
-        for (int y = 0; y < image.getHeight(); y++) {
-            image.setRGB(path[y], y, Color.black.getRGB());
+        if (cutSize > image.getWidth()) {
+            System.out.println("Cut size too big!");
+            return -1;
         }
+        int convertToRGBTime = 0;
+        int energyMapTime = 0;
+        int shortestSeamTime = 0;
+        int pathRemovalTime = 0;
 
-        File outputfile = new File("src/main/resources/images/newestSave.PNG");
+        for (int i = 0; i < cutSize; i++) {
+            System.out.print("Working on seam " + i + "...");
+            long startTime = System.currentTimeMillis();
+            Color[][] imageRGB = convertToRGB(image);
+            //long endTime = System.currentTimeMillis();
+            //System.out.println("RGB Conversion for " + i + " took " + (endTime - startTime) + " milliseconds");
+            //convertToRGBTime += (endTime - startTime);
+            //System.out.print("converted RGB...");
+
+            //startTime = System.currentTimeMillis();
+            int[][] energyMap = createEnergyMap(imageRGB);
+            //System.out.println("Pathfinding for " + i + " took " + (endTime - startTime) + " milliseconds");
+            //endTime = System.currentTimeMillis();
+            //energyMapTime += (endTime - startTime);
+            //System.out.print("energy map created...");
+
+            //startTime = System.currentTimeMillis();
+            int[] path = shortestPath(energyMap);
+            //endTime = System.currentTimeMillis();
+            //System.out.println("Pathfinding for " + i + " took " + (endTime - startTime) + " milliseconds");
+            //shortestSeamTime += (endTime - startTime);
+            //System.out.print("seam carved...");
+
+            //startTime = System.currentTimeMillis();
+            image = removePath(path, image);
+            long endTime = System.currentTimeMillis();
+            System.out.println("Iteration " + i + " took " + (endTime - startTime) + " milliseconds");
+            //pathRemovalTime += (endTime - startTime);
+            //System.out.println("path removed!");
+
+
+        }
+        /*
+        System.out.println("For a new image:");
+        System.out.println("Convert to RGB Time: " + convertToRGBTime + " ms");
+        System.out.println("Energy mapping Time: " + energyMapTime + " ms");
+        System.out.println("Path identification Time: " + shortestSeamTime + " ms");
+        System.out.println("Path removal Time: " + pathRemovalTime + " ms");
+
+         */
+        File outputfile = new File("src/main/resources/images/carved.PNG");
         ImageIO.write(image, "PNG", outputfile);
-        return null;
+        return 1;
+
     }
 
     // Takes a buffered image and converts into a 2d array with Color object for each pixel
@@ -53,6 +97,8 @@ public class Carver {
                 // Energy mapping algorithm is Δx^2(x, y) + Δy^2(x, y)
                 Color prev = null;
                 Color next = null;
+
+                // Edges are trated as adjacent to the opposite side
                 if (x == 0) {
                     prev = colorArray[width-1][y];
                     next = colorArray[x+1][y];
@@ -96,7 +142,7 @@ public class Carver {
     }
 
     //TODO: rename method
-    private int[] shortestSeamPath(int[][] energyArray) {
+    private int[] shortestPath(int[][] energyArray) {
         int width = energyArray.length;
         int height = energyArray[0].length;
 
@@ -131,8 +177,8 @@ public class Carver {
             }
         }
 
-
         // TODO: printing the paths, removing this debugging
+        /*
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 System.out.print("[" + distTo[x][y] + "]");
@@ -143,9 +189,8 @@ public class Carver {
             for (int x = 0; x < width; x++) {
                 System.out.print("[" + parent[x][y] + "]");
             }
-            System.out.println();
         }
-
+        */
         // Backtracking from the minimum of the last row:
         // Finding minimum of the last row:
 
@@ -159,7 +204,7 @@ public class Carver {
             }
         }
 
-        // Start the minPath array to store the x values of the minimum path, iwth the indecies indicating the y coord
+        // Start the minPath array to store the x values of the minimum path, with the indicies indicating the y coord
         int[] minPath = new int[height];
         minPath[height-1] = minX;
 
@@ -171,12 +216,31 @@ public class Carver {
             minPath[y-1] = parentX;
             childX = parentX;
         }
-
-        for (int i = 0; i < minPath.length; i++) {
-            System.out.print("(" + minPath[i] + ")");
-        }
-
-
         return minPath;
+    }
+
+    private BufferedImage removePath(int[] path, BufferedImage image) {
+        for (int y = 0; y < image.getHeight(); y++) {
+            for (int x = path[y]; x < image.getWidth() - 1; x++) {
+                image.setRGB(x, y, image.getRGB(x+1, y));
+            }
+        }
+        return image.getSubimage(0, 0, image.getWidth() - 1, image.getHeight());
+    }
+}
+
+class PixelNode implements Comparable<PixelNode> {
+    public int x;
+    public int y;
+    public int energy;
+
+    public PixelNode(int x1, int y1, int e1) {
+        x = x1;
+        y = y1;
+        energy = e1;
+    }
+
+    public int compareTo(PixelNode other) {
+        return this.energy - other.energy;
     }
 }

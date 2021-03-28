@@ -13,30 +13,49 @@ import java.util.concurrent.ExecutionException;
 public class Listener extends ListenerAdapter {
 
     public void onMessageReceived(MessageReceivedEvent event) {
-        // if (event.getAuthor().isBot()) return;
+        if (event.getAuthor().isBot()) return;
         System.out.println("Message from " +
                 event.getAuthor().getName() +
                 ": " +
                 event.getMessage()
         );
-        String fileName = event.getMessage().getAttachments().get(0).getFileName();
-        System.out.println("Received " + fileName + " from " + event.getAuthor().getName());
+        Message message = event.getMessage();
+        String content = message.getContentRaw();
+        MessageChannel channel = event.getChannel();
 
-        try {
-            event.getMessage().getAttachments().get(0).downloadToFile("src/main/resources/images/" + fileName).get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+        String[] splitContent = content.split(" ");
+        System.out.println(splitContent[0]);
+        System.out.println(message.getAttachments().isEmpty());
+        if (splitContent[0].equals("carve") && !message.getAttachments().isEmpty()) {
+            try {
+                System.out.println("Message with image received!");
+                channel.sendMessage("SMOH!!! (begins chopping)").queue();
+                message.getAttachments().get(0).downloadToFile("src/main/resources/images/download.png").get();
 
-        System.out.println("Smohohmo! (saved)");
-        Carver carver = new Carver();
-        try {
-            System.out.println(fileName);
-            carver.createEnergyArray("src/main/resources/images/" + fileName);
-        } catch (IOException e) { //Check this later
-            System.out.print("File not found!");
+            } catch (InterruptedException e) {
+
+            } catch (ExecutionException e) {
+
+            }
+
+
+            Carver carver = new Carver();
+            int i = 0;
+            try {
+                if (splitContent.length > 1) {
+                    i = carver.carve("src/main/resources/images/download.png", Integer.parseInt(splitContent[1]));
+                } else {
+                    i = carver.carve("src/main/resources/images/download.png", 200);
+                }
+            } catch (IOException e) { //Check this later
+                System.out.print("File not found!");
+            }
+
+            if (i == -1) {
+                channel.sendMessage("Smoh..... (cut size is too big...)").queue();
+            } else {
+                channel.sendMessage("SMOHOHO!!! (finished!)").addFile(new File("src/main/resources/images/carved.PNG")).queue();
+            }
         }
     }
 }
