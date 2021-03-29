@@ -17,15 +17,13 @@ public class Listener extends ListenerAdapter {
         System.out.println("Message from " +
                 event.getAuthor().getName() +
                 ": " +
-                event.getMessage()
+                event.getMessage().getContentRaw()
         );
         Message message = event.getMessage();
         String content = message.getContentRaw();
         MessageChannel channel = event.getChannel();
 
         String[] splitContent = content.split(" ");
-        System.out.println(splitContent[0]);
-        System.out.println(message.getAttachments().isEmpty());
         if (splitContent[0].equals("carve") && !message.getAttachments().isEmpty()) {
             try {
                 System.out.println("Message with image received!");
@@ -38,14 +36,13 @@ public class Listener extends ListenerAdapter {
 
             }
 
-
             Carver carver = new Carver();
             int i = 0;
             try {
                 if (splitContent.length > 1) {
                     i = carver.carve("src/main/resources/images/download.png", Integer.parseInt(splitContent[1]));
                 } else {
-                    i = carver.carve("src/main/resources/images/download.png", 200);
+                    i = carver.carve("src/main/resources/images/download.png", (int) (message.getAttachments().get(0).getWidth() * 0.25));
                 }
             } catch (IOException e) { //Check this later
                 System.out.print("File not found!");
