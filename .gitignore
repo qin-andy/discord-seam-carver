@@ -141,4 +141,5 @@ gradle-app.setting
 hs_err_pid*
 
 # images
+src/main/resources/images/*
 *.png
