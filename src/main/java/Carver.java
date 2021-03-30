@@ -16,7 +16,7 @@ public class Carver {
     //TODO: remove testing main statement
     public static void main(String[] args) throws IOException { // For testing
         Carver carver = new Carver();
-        carver.carve("src/main/resources/images/hokusai.jpg", 200, 100);
+        carver.carve("src/main/resources/images/lapp.png", 200, 0);
     }
 
 
@@ -37,9 +37,10 @@ public class Carver {
         System.out.println("Image size is " + width + " by " + height);
 
         // compression
-        if (height > 1000 || width > 1000) {
+        int maxSize = 1500;
+        if (height > maxSize || width > maxSize) {
             long start = System.currentTimeMillis();
-            double scale = 1000.0 / Math.max(height, width);
+            double scale = (double) maxSize / Math.max(height, width);
 
             int newW = (int) (width*scale);
             int newH = (int) (height*scale);
@@ -142,11 +143,18 @@ public class Carver {
         int height = image.getHeight();
         int width = image.getWidth();
         System.out.println("Image size is " + width + " by " + height);
+        System.out.println("Requested cut is " + cutSize + " and " + cutSizeY);
+
+        if (cutSize >= image.getWidth() || cutSizeY >= image.getHeight()) {
+            System.out.println("Cut size too big!");
+            return -1;
+        }
 
         // compression
-        if (height > 1000 || width > 1000) {
+        int maxSize = 1000;
+        if (height > maxSize || width > maxSize) {
             long start = System.currentTimeMillis();
-            double scale = 1000.0 / Math.max(height, width);
+            double scale = (double) maxSize / Math.max(height, width);
 
             int newW = (int) (width*scale);
             int newH = (int) (height*scale);
@@ -157,10 +165,12 @@ public class Carver {
             image = scaledImage;
             System.out.println("Image too large! Scaling down to " + newW + " by " + newH);
 
-            double cutFactor = (double) cutSize / width;
-            System.out.println("Adjusted cut size from " + cutSize + " to " + (int) (cutFactor * newW));
-            cutSize = (int) (cutFactor * newW);
+            double cutFactorX = (double) cutSize / width;
+            double cutFactorY = (double) cutSizeY / height;
 
+            cutSize = (int) (cutFactorX * newW);
+            cutSizeY = (int) (cutFactorY * newH);
+            System.out.println("Adjusted cut size to " + cutSize + " and " + cutSizeY);
             height = newH;
             width = newW;
 
@@ -217,7 +227,7 @@ public class Carver {
             pathRemovalTime += (endTime - startTime);
 
             //Timing for iterations
-            if (i%25 == 0) {
+            if (i%50 == 0) {
                 long iterationEndTime = System.currentTimeMillis();
                 System.out.println("Iteration " + i + " took " + (iterationEndTime - iterationStartTime) + " milliseconds");
                 iterationStartTime = System.currentTimeMillis();
@@ -264,7 +274,7 @@ public class Carver {
                 pathRemovalTime += (endTime - startTime);
 
                 //Timing for iterations
-                if (i%25 == 0) {
+                if (i%50 == 0) {
                     long iterationEndTime = System.currentTimeMillis();
                     System.out.println("Iteration " + i + " took " + (iterationEndTime - iterationStartTime) + " milliseconds");
                     iterationStartTime = System.currentTimeMillis();

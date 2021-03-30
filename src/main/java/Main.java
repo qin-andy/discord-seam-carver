@@ -15,7 +15,7 @@ public class Main {
     public static void main(String[] args)
             throws LoginException, InterruptedException, IOException
     {
-        String token = "";
+        String token = "ODE3MjgwNjk2ODI4NTU5Mzgw.YEHN9g.xX6mfDGlUOIcnMCdDq0JIQD0_pc";
         JDABuilder jda = JDABuilder.createDefault(token)
                 .addEventListeners(new Listener());
         jda.build();
