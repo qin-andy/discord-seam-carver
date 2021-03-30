@@ -16,7 +16,7 @@ public class Carver {
     //TODO: remove testing main statement
     public static void main(String[] args) throws IOException { // For testing
         Carver carver = new Carver();
-        carver.carve("src/main/resources/images/lapp.png", 200);
+        carver.carve("src/main/resources/images/hokusai.jpg", 200);
 
         /*
         File file = new File("src/main/resources/images/hokusai.jpg");
@@ -92,7 +92,7 @@ public class Carver {
             shortestSeamTime += (endTime - startTime);
 
             startTime = System.currentTimeMillis();
-            image = removePath(path, image);
+            image = removePath2(path, image, iWidth);
             endTime = System.currentTimeMillis();
             pathRemovalTime += (endTime - startTime);
 
@@ -288,14 +288,14 @@ public class Carver {
         return image.getSubimage(0, 0, image.getWidth() - 1, image.getHeight());
     }
 
-    private BufferedImage removePath2(int[] path, BufferedImage image) {
+    private BufferedImage removePath2(int[] path, BufferedImage image, int iWidth) {
         int width = image.getWidth();
         int height = image.getHeight();
         int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
 
         for (int y = 0; y < image.getHeight(); y++) {
             for (int x = path[y]; x < image.getWidth() - 1; x++) {
-                int position = x + y * width;
+                int position = y*iWidth + x;
                 pixels[position] = pixels[position+1];
             }
         }
