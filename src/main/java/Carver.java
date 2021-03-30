@@ -16,7 +16,7 @@ public class Carver {
     //TODO: remove testing main statement
     public static void main(String[] args) throws IOException { // For testing
         Carver carver = new Carver();
-        carver.carve("src/main/resources/images/hokusai.jpg", 200);
+        carver.carve("src/main/resources/images/lapp.png", 200);
     }
 
     // Creates an energy map from a filepath to an image
@@ -24,7 +24,12 @@ public class Carver {
 
         // Reading file using ImageIO read
         File file = new File(filePath);
-        BufferedImage image = ImageIO.read(file);
+        BufferedImage image;
+        try {
+            image = ImageIO.read(file);
+        } catch (IOException e) {
+            return -2;
+        }
 
         // Conversion to int ARGB type
         BufferedImage imageARGB = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);

@@ -26,8 +26,6 @@ public class Listener extends ListenerAdapter {
         String[] splitContent = content.split(" ");
         if (splitContent[0].equals("carve") && !message.getAttachments().isEmpty()) {
             try {
-                System.out.println("Message with image received!");
-                channel.sendMessage("SMOH!!! (begins chopping)").queue();
                 message.getAttachments().get(0).downloadToFile("src/main/resources/images/download.png").get();
 
             } catch (InterruptedException e) {
@@ -40,19 +38,28 @@ public class Listener extends ListenerAdapter {
             int i = 0;
             try {
                 if (splitContent.length > 1) {
-                    i = carver.carve("src/main/resources/images/download.png", Integer.parseInt(splitContent[1]));
+                    int size = Integer.parseInt(splitContent[1]);
+                    channel.sendMessage("SMOH!!! (begins chopping)").queue();
+                    i = carver.carve("src/main/resources/images/download.png", size);
                 } else {
-                    i = carver.carve("src/main/resources/images/download.png", (int) (message.getAttachments().get(0).getWidth()*0.25));
+                    channel.sendMessage("SMOH!!! (begins chopping)").queue();
+                    i = carver.carve("src/main/resources/images/download.png",
+                            (int) (message.getAttachments().get(0).getWidth()*0.25));
                 }
             } catch (IOException e) { //Check this later
-                System.out.print("File not found!");
+                channel.sendMessage("smoh...,, (there was an error downloading the image!)").queue();
+            } catch (NumberFormatException e) {
+                channel.sendMessage("smoh.,,, (invalid size provided");
             }
 
             if (i == -1) {
                 channel.sendMessage("Smoh..... (cut size is too big...)").queue();
-            } else {
+            } else if (i == -2) {
+                channel.sendMessage("smoh.. (unable to read file..)").queue();
+            }
+             else {
                 channel.sendMessage("SMOHOHO!!! (finished in " + i + " ms!)")
-                        .addFile(new File("src/main/resources/images/carved.PNG")).queue();
+                    .addFile(new File("src/main/resources/images/carved.PNG")).queue();
             }
         }
     }
