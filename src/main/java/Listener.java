@@ -39,12 +39,16 @@ public class Listener extends ListenerAdapter {
             try {
                 channel.sendMessage("SMOH!!! (begins chopping)").queue();
                 if (splitContent.length > 1) {
-                    int size = Integer.parseInt(splitContent[1]);
-                    i = carver.carve("src/main/resources/images/download.png", size);
+                    int sizeX = Integer.parseInt(splitContent[1]);
+                    int sizeY = 0;
+                    if (splitContent.length > 2) {
+                        sizeY = Integer.parseInt(splitContent[2]);
+                    }
+                    i = carver.carve("src/main/resources/images/download.png", sizeX, sizeY);
                 } else {
-
+                    Message.Attachment attachment = message.getAttachments().get(0);
                     i = carver.carve("src/main/resources/images/download.png",
-                            (int) (message.getAttachments().get(0).getWidth()*0.25));
+                            (int) (attachment.getWidth()*0.25), (int) (attachment.getHeight()*0.25));
                 }
             } catch (IOException e) { //Check this later
                 channel.sendMessage("smoh...,, (there was an error downloading the image!)").queue();

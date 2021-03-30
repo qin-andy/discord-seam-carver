@@ -16,8 +16,9 @@ public class Carver {
     //TODO: remove testing main statement
     public static void main(String[] args) throws IOException { // For testing
         Carver carver = new Carver();
-        carver.carve("src/main/resources/images/lapp.png", 200);
+        carver.carve("src/main/resources/images/hokusai.jpg", 200, 100);
     }
+
 
     // Creates an energy map from a filepath to an image
     public int carve(String filePath, int cutSize) throws IOException {
@@ -39,7 +40,7 @@ public class Carver {
         if (height > 1000 || width > 1000) {
             long start = System.currentTimeMillis();
             double scale = 1000.0 / Math.max(height, width);
-            System.out.println(scale);
+
             int newW = (int) (width*scale);
             int newH = (int) (height*scale);
             Image scaled = image.getScaledInstance(newW, newH, Image.SCALE_SMOOTH);
@@ -47,9 +48,15 @@ public class Carver {
             scaledImage.createGraphics().drawImage(scaled, 0, 0, null);
             scaledImage.createGraphics().dispose(); //TODO: CHECK IF THIS IS ACTUALLY DISPOSED!
             image = scaledImage;
-            System.out.print("Image too large! Scaling down to " + newW + " by " + newH);
+            System.out.println("Image too large! Scaling down to " + newW + " by " + newH);
+
+            double cutFactor = (double) cutSize / width;
+            System.out.println("Adjusted cut size from " + cutSize + " to " + (int) (cutFactor * newW));
+            cutSize = (int) (cutFactor * newW);
+
             long end = System.currentTimeMillis();
             System.out.println("Compression took " + (end - start) + "ms!");
+
         }
 
         // Conversion to ARGB
@@ -106,6 +113,174 @@ public class Carver {
                 iterationStartTime = System.currentTimeMillis();
             }
         }
+
+        System.out.println("For a new image:");
+        System.out.println("Convert to RGB Time: " + convertToRGBTime + " ms");
+        System.out.println("Energy mapping Time: " + energyMapTime + " ms");
+        System.out.println("Path identification Time: " + shortestSeamTime + " ms");
+        System.out.println("Path removal Time: " + pathRemovalTime + " ms");
+        int totalTime = convertToRGBTime + energyMapTime + shortestSeamTime + pathRemovalTime;
+        System.out.println("TOTAL TIME:" + totalTime + " ms");
+
+
+        File outputFile = new File("src/main/resources/images/carved.PNG");
+        ImageIO.write(image, "PNG", outputFile);
+        return totalTime;
+    }
+
+    public int carve(String filePath, int cutSize, int cutSizeY) throws IOException {
+
+        // Reading file using ImageIO read
+        File file = new File(filePath);
+        BufferedImage image;
+        try {
+            image = ImageIO.read(file);
+        } catch (IOException e) {
+            return -2;
+        }
+
+        int height = image.getHeight();
+        int width = image.getWidth();
+        System.out.println("Image size is " + width + " by " + height);
+
+        // compression
+        if (height > 1000 || width > 1000) {
+            long start = System.currentTimeMillis();
+            double scale = 1000.0 / Math.max(height, width);
+
+            int newW = (int) (width*scale);
+            int newH = (int) (height*scale);
+            Image scaled = image.getScaledInstance(newW, newH, Image.SCALE_SMOOTH);
+            BufferedImage scaledImage = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_ARGB);
+            scaledImage.createGraphics().drawImage(scaled, 0, 0, null);
+            scaledImage.createGraphics().dispose(); //TODO: CHECK IF THIS IS ACTUALLY DISPOSED!
+            image = scaledImage;
+            System.out.println("Image too large! Scaling down to " + newW + " by " + newH);
+
+            double cutFactor = (double) cutSize / width;
+            System.out.println("Adjusted cut size from " + cutSize + " to " + (int) (cutFactor * newW));
+            cutSize = (int) (cutFactor * newW);
+
+            height = newH;
+            width = newW;
+
+            long end = System.currentTimeMillis();
+            System.out.println("Compression took " + (end - start) + "ms!");
+
+        }
+
+        // Conversion to ARGB
+        BufferedImage imageARGB = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        imageARGB.createGraphics().drawImage(image, 0, 0, image.getWidth(), image.getHeight(), null);
+
+
+        imageARGB.createGraphics().dispose();
+        image = imageARGB;
+
+
+        // Determining cut is possible (size)
+        if (cutSize > image.getWidth()) {
+            System.out.println("Cut size too big!");
+            return -1;
+        }
+
+        // Timing
+        int convertToRGBTime = 0;
+        int energyMapTime = 0;
+        int shortestSeamTime = 0;
+        int pathRemovalTime = 0;
+        long iterationStartTime = System.currentTimeMillis();
+
+
+        int iWidth = image.getWidth();
+
+        for (int i = 0; i < cutSize; i++) {
+            long startTime = System.currentTimeMillis();
+            //int[][] imageRGB = convertToRGB3(image);
+            int[][] imageRGB = convertToRGB(image, iWidth);
+            long endTime = System.currentTimeMillis();
+            convertToRGBTime += (endTime - startTime);
+
+            startTime = System.currentTimeMillis();
+            int[][] energyMap = createEnergyMap(imageRGB);
+            endTime = System.currentTimeMillis();
+            energyMapTime += (endTime - startTime);
+
+            startTime = System.currentTimeMillis();
+            int[] path = shortestPath(energyMap);
+            endTime = System.currentTimeMillis();
+            shortestSeamTime += (endTime - startTime);
+
+            startTime = System.currentTimeMillis();
+            image = removePath(path, image, iWidth);
+            endTime = System.currentTimeMillis();
+            pathRemovalTime += (endTime - startTime);
+
+            //Timing for iterations
+            if (i%25 == 0) {
+                long iterationEndTime = System.currentTimeMillis();
+                System.out.println("Iteration " + i + " took " + (iterationEndTime - iterationStartTime) + " milliseconds");
+                iterationStartTime = System.currentTimeMillis();
+            }
+        }
+
+
+        if (cutSizeY > 0) {
+            long start = System.currentTimeMillis();
+
+            BufferedImage transpose = new BufferedImage(image.getHeight(), image.getWidth(),
+                    BufferedImage.TYPE_INT_ARGB);
+
+            for (int x = 0; x < image.getWidth(); x++) {
+                for (int y = 0; y < image.getHeight(); y++) {
+                    transpose.setRGB(y, x, image.getRGB(x, y));
+                }
+            }
+            image = transpose;
+
+            long end = System.currentTimeMillis();
+            System.out.println("Tranposing took  " + (end - start) + "ms!");
+            iWidth = image.getWidth();
+            for (int i = 0; i < cutSizeY; i++) {
+                long startTime = System.currentTimeMillis();
+                //int[][] imageRGB = convertToRGB3(image);
+                int[][] imageRGB = convertToRGB(image, iWidth);
+                long endTime = System.currentTimeMillis();
+                convertToRGBTime += (endTime - startTime);
+
+                startTime = System.currentTimeMillis();
+                int[][] energyMap = createEnergyMap(imageRGB);
+                endTime = System.currentTimeMillis();
+                energyMapTime += (endTime - startTime);
+
+                startTime = System.currentTimeMillis();
+                int[] path = shortestPath(energyMap);
+                endTime = System.currentTimeMillis();
+                shortestSeamTime += (endTime - startTime);
+
+                startTime = System.currentTimeMillis();
+                image = removePath(path, image, iWidth);
+                endTime = System.currentTimeMillis();
+                pathRemovalTime += (endTime - startTime);
+
+                //Timing for iterations
+                if (i%25 == 0) {
+                    long iterationEndTime = System.currentTimeMillis();
+                    System.out.println("Iteration " + i + " took " + (iterationEndTime - iterationStartTime) + " milliseconds");
+                    iterationStartTime = System.currentTimeMillis();
+                }
+            }
+
+            transpose = new BufferedImage(image.getHeight(), image.getWidth(),
+                    BufferedImage.TYPE_INT_ARGB);
+            for (int x = 0; x < image.getWidth(); x++) {
+                for (int y = 0; y < image.getHeight(); y++) {
+                    transpose.setRGB(y, x, image.getRGB(x, y));
+                }
+            }
+            image = transpose;
+        }
+
 
         System.out.println("For a new image:");
         System.out.println("Convert to RGB Time: " + convertToRGBTime + " ms");
