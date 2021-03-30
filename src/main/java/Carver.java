@@ -2,8 +2,11 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.awt.image.DataBufferInt;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
+import java.io.WriteAbortedException;
 import java.util.Arrays;
 import java.util.PriorityQueue;
 
@@ -12,36 +15,72 @@ public class Carver {
     //TODO: remove testing main statement
     public static void main(String[] args) throws IOException { // For testing
         Carver carver = new Carver();
-        carver.carve("src/main/resources/images/lapp.png", 200);
+        carver.carve("src/main/resources/images/lapp.PNG", 200);
+
+
+
+        /*
+        File file = new File("src/main/resources/images/testpath_small.PNG");
+        BufferedImage image = ImageIO.read(file);
+        System.out.println(image.getType());
+        BufferedImage imageARGB = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        imageARGB.createGraphics().drawImage(image, 0, 0, image.getWidth(), image.getHeight(), null);
+        imageARGB.createGraphics().dispose();
+        image = imageARGB;
+
+        int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
+        System.out.println("Array byte pixels size: " + pixels.length);
+
+        for (int i = 0; i < pixels.length; i++){
+            //System.out.print(pixels[i] + " ");
+        }
+        System.out.println();
+
+        WritableRaster raster = image.getRaster();
+        System.out.println(raster);
+        System.out.println("Number of bands: " + raster.getNumBands());
+        System.out.println("Data elements: " + raster.getNumDataElements());
+        */
     }
 
     // Creates an energy map from a filepath to an image
     public int carve(String filePath, int cutSize) throws IOException {
 
+        // Reading file using ImageIO read
         File file = new File(filePath);
         BufferedImage image = ImageIO.read(file);
+
+        // Conversion to int ARGB type
+        BufferedImage imageARGB = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        imageARGB.createGraphics().drawImage(image, 0, 0, image.getWidth(), image.getHeight(), null);
+        imageARGB.createGraphics().dispose();
+        image = imageARGB;
+
+        // Determining cut is possible (size)
         if (cutSize > image.getWidth()) {
             System.out.println("Cut size too big!");
             return -1;
         }
+
+        // Timing
         int convertToRGBTime = 0;
         int energyMapTime = 0;
         int shortestSeamTime = 0;
         int pathRemovalTime = 0;
         long iterationStartTime = System.currentTimeMillis();
         long interationEndTime;
+
+
         for (int i = 0; i < cutSize; i++) {
             //System.out.print("Working on seam " + i + "...");
             long startTime = System.currentTimeMillis();
-            //Color[][] imageRGB = convertToRGB(image);
-            int[][] imageRGB = convertToRGB2(image);
+            int[][] imageRGB = convertToRGB3(image);
             long endTime = System.currentTimeMillis();
             //System.out.println("RGB Conversion for " + i + " took " + (endTime - startTime) + " milliseconds");
             convertToRGBTime += (endTime - startTime);
             //System.out.print("converted RGB...");
 
             startTime = System.currentTimeMillis();
-            //int[][] energyMap = createEnergyMap(imageRGB);
             int[][] energyMap = createEnergyMap2(imageRGB);
             endTime = System.currentTimeMillis();
             //System.out.println("Energy mapping for " + i + " took " + (endTime - startTime) + " milliseconds");
@@ -61,6 +100,8 @@ public class Carver {
             //System.out.println("Path removal for " + i + " took " + (endTime - startTime) + " milliseconds");
             pathRemovalTime += (endTime - startTime);
             //System.out.println("path removed!");
+
+            //Timing for iterations
             if (i%25 == 0) {
                 long iterationEndTime = System.currentTimeMillis();
                 System.out.println("Iteration " + i + " took " + (iterationEndTime - iterationStartTime) + " milliseconds");
@@ -73,6 +114,7 @@ public class Carver {
         System.out.println("Energy mapping Time: " + energyMapTime + " ms");
         System.out.println("Path identification Time: " + shortestSeamTime + " ms");
         System.out.println("Path removal Time: " + pathRemovalTime + " ms");
+        System.out.println("TOTAL TIME:" + convertToRGBTime + energyMapTime + shortestSeamTime + pathRemovalTime + " ms");
 
 
         File outputFile = new File("src/main/resources/images/carved.PNG");
@@ -82,18 +124,6 @@ public class Carver {
     }
 
     // Takes a buffered image and converts into a 2d array with Color object for each pixel
-    private Color[][] convertToRGB(BufferedImage image) {
-        int width = image.getWidth();
-        int height = image.getHeight();
-        Color[][] result = new Color[width][height];
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++)  {
-                result[x][y] = new Color(image.getRGB(x, y));
-            }
-        }
-        return result;
-    }
-
     private int[][] convertToRGB2(BufferedImage image) {
         int width = image.getWidth();
         int height = image.getHeight();
@@ -125,58 +155,19 @@ public class Carver {
         return result;
     }
 
-    private int[][] createEnergyMap(Color[][] colorArray) {
-        int width = colorArray.length;
-        int height = colorArray[0].length;
-        int[][] energyArray = new int[width][height];
+    //
+    private int[][] convertToRGB3(BufferedImage image) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+        int[][] result = new int[width][height];
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++)  {
-                // Typed out for readability
-                // Energy mapping algorithm is Δx^2(x, y) + Δy^2(x, y)
-                Color prev = null;
-                Color next = null;
-
-                // Edges are trated as adjacent to the opposite side
-                if (x == 0) {
-                    prev = colorArray[width-1][y];
-                    next = colorArray[x+1][y];
-                } else if (x == width - 1) {
-                    prev = colorArray[x-1][y];
-                    next = colorArray[0][y];
-                } else {
-                    prev = colorArray[x-1][y];
-                    next = colorArray[x+1][y];
-                }
-
-                int deltaR = (int) Math.pow(prev.getRed() - next.getRed(), 2);
-                int deltaG = (int) Math.pow(prev.getGreen() - next.getGreen(), 2);
-                int deltaB = (int) Math.pow(prev.getBlue() - next.getBlue(), 2);
-
-                int xDeltaSquare = deltaR + deltaG + deltaB;
-
-                prev = null;
-                next = null;
-                if (y == 0) {
-                    prev = colorArray[x][height-1];
-                    next = colorArray[x][y+1];
-                } else if (y == height - 1) {
-                    prev = colorArray[x][y-1];
-                    next = colorArray[x][0];
-                } else {
-                    prev = colorArray[x][y];
-                    next = colorArray[x][y];
-                }
-
-                deltaR = (int) Math.pow(prev.getRed() - next.getRed(), 2);
-                deltaG = (int) Math.pow(prev.getGreen() - next.getGreen(), 2);
-                deltaB = (int) Math.pow(prev.getBlue() - next.getBlue(), 2);
-
-                int yDeltaSquare = deltaR + deltaG + deltaB;
-                energyArray[x][y] = xDeltaSquare + yDeltaSquare;
+                result[x][y] = image.getRGB(x, y);
             }
         }
-        return energyArray;
+        return result;
     }
+
 
     private int[][] createEnergyMap2(int[][] colorArray) {
         int width = colorArray.length;
@@ -247,6 +238,8 @@ public class Carver {
         return energyArray;
     }
 
+
+
     private int[] shortestPath(int[][] energyArray) {
         int width = energyArray.length;
         int height = energyArray[0].length;
@@ -309,64 +302,6 @@ public class Carver {
         return minPath;
     }
 
-    private int[] shortestPath2(int[][] energyArray) {
-        int width = energyArray.length;
-        int height = energyArray[0].length;
-
-        // Each [x][y] pair is modelled as a node
-        int[][] parent = new int[width][height]; // The x value of the node's parent; the y is the child y - 1
-        PixelNode[][] pixelNodes = new PixelNode[width][height];
-        PriorityQueue<PixelNode> perimeter = new PriorityQueue<>();
-
-        for (int i = 0; i < width; i++) {
-            pixelNodes[i][0] = new PixelNode(i, 0, energyArray[i][0]);
-            perimeter.add(pixelNodes[i][0]);
-            // TODO: make sure comparable works for pixel nodes (queue is in order)
-        }
-
-        PixelNode currentNode = null;
-        while (!perimeter.isEmpty()) {
-            // Traverse through every node in order for a weighted path tree
-            currentNode = perimeter.poll();
-            //System.out.println(currentNode);
-            if (currentNode.y == height - 1) {
-                break;
-            }
-
-            int lower = -1;
-            int upper = 1;
-            if (currentNode.x == 0) {
-                lower = 0;
-            } else if (currentNode.x == width - 1) {
-                upper = 0;
-            }
-
-            // For each of the current node's children, check if the path through the current node is shorter
-            for (int i = lower; i < upper + 1; i++) {
-                int x = currentNode.x;
-                int y = currentNode.y;
-                if (pixelNodes[x+i][y+1] == null) {
-                    pixelNodes[x+i][y+1] = new PixelNode(x + i, y + 1, energyArray[x+i][y+1] + currentNode.energy);
-                    perimeter.add(pixelNodes[x+i][y+1]);
-                    parent[x+i][y+1] = x;
-                }
-            }
-        }
-
-        // Start the minPath array to store the x values of the minimum path, with the indicies indicating the y coord
-        int[] minPath = new int[height];
-        minPath[height-1] = currentNode.x;
-
-        int childX = currentNode.x;
-        int parentX;
-        for (int y = height - 1; y > 0; y--) {
-            parentX = parent[childX][y];
-            minPath[y-1] = parentX;
-            childX = parentX;
-        }
-        return minPath;
-    }
-
     private BufferedImage removePath(int[] path, BufferedImage image) {
 
         for (int y = 0; y < image.getHeight(); y++) {
@@ -375,26 +310,6 @@ public class Carver {
             }
         }
         return image.getSubimage(0, 0, image.getWidth() - 1, image.getHeight());
-    }
-}
-
-class PixelNode implements Comparable<PixelNode> {
-    public int x;
-    public int y;
-    public int energy;
-
-    public PixelNode(int x1, int y1, int e1) {
-        x = x1;
-        y = y1;
-        energy = e1;
-    }
-
-    public int compareTo(PixelNode other) {
-        return this.energy - other.energy;
-    }
-
-    public String toString() {
-        return "[" + x + "," + y + "," + energy + "]";
     }
 }
 
