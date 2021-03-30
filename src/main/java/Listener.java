@@ -37,12 +37,12 @@ public class Listener extends ListenerAdapter {
             Carver carver = new Carver();
             int i = 0;
             try {
+                channel.sendMessage("SMOH!!! (begins chopping)").queue();
                 if (splitContent.length > 1) {
                     int size = Integer.parseInt(splitContent[1]);
-                    channel.sendMessage("SMOH!!! (begins chopping)").queue();
                     i = carver.carve("src/main/resources/images/download.png", size);
                 } else {
-                    channel.sendMessage("SMOH!!! (begins chopping)").queue();
+
                     i = carver.carve("src/main/resources/images/download.png",
                             (int) (message.getAttachments().get(0).getWidth()*0.25));
                 }

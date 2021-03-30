@@ -31,9 +31,32 @@ public class Carver {
             return -2;
         }
 
-        // Conversion to int ARGB type
+        int height = image.getHeight();
+        int width = image.getWidth();
+        System.out.println("Image size is " + width + " by " + height);
+
+        // compression
+        if (height > 1000 || width > 1000) {
+            long start = System.currentTimeMillis();
+            double scale = 1000.0 / Math.max(height, width);
+            System.out.println(scale);
+            int newW = (int) (width*scale);
+            int newH = (int) (height*scale);
+            Image scaled = image.getScaledInstance(newW, newH, Image.SCALE_SMOOTH);
+            BufferedImage scaledImage = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_ARGB);
+            scaledImage.createGraphics().drawImage(scaled, 0, 0, null);
+            scaledImage.createGraphics().dispose(); //TODO: CHECK IF THIS IS ACTUALLY DISPOSED!
+            image = scaledImage;
+            System.out.print("Image too large! Scaling down to " + newW + " by " + newH);
+            long end = System.currentTimeMillis();
+            System.out.println("Compression took " + (end - start) + "ms!");
+        }
+
+        // Conversion to ARGB
         BufferedImage imageARGB = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
         imageARGB.createGraphics().drawImage(image, 0, 0, image.getWidth(), image.getHeight(), null);
+
+
         imageARGB.createGraphics().dispose();
         image = imageARGB;
 
