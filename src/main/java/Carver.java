@@ -17,31 +17,6 @@ public class Carver {
     public static void main(String[] args) throws IOException { // For testing
         Carver carver = new Carver();
         carver.carve("src/main/resources/images/hokusai.jpg", 200);
-
-        /*
-        File file = new File("src/main/resources/images/hokusai.jpg");
-        BufferedImage image = ImageIO.read(file);
-        System.out.println(image.getType());
-        BufferedImage imageARGB = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
-        imageARGB.createGraphics().drawImage(image, 0, 0, image.getWidth(), image.getHeight(), null);
-        imageARGB.createGraphics().dispose();
-        image = imageARGB;
-
-        int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
-        int width = image.getWidth();
-        int height = image.getHeight();
-        System.out.println("Array byte pixels size: " + pixels.length);
-        System.out.println("Width x height:" + (width*height));
-
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++)  {
-                if (pixels[y*width + x] != image.getRGB(x,y)) {
-                    System.out.println("Difference...");
-                }
-            }
-        }
-        */
-
     }
 
     // Creates an energy map from a filepath to an image
@@ -77,7 +52,7 @@ public class Carver {
         for (int i = 0; i < cutSize; i++) {
             long startTime = System.currentTimeMillis();
             //int[][] imageRGB = convertToRGB3(image);
-            int[][] imageRGB = convertToRGB4(image, iWidth);
+            int[][] imageRGB = convertToRGB(image, iWidth);
             long endTime = System.currentTimeMillis();
             convertToRGBTime += (endTime - startTime);
 
@@ -92,7 +67,7 @@ public class Carver {
             shortestSeamTime += (endTime - startTime);
 
             startTime = System.currentTimeMillis();
-            image = removePath2(path, image, iWidth);
+            image = removePath(path, image, iWidth);
             endTime = System.currentTimeMillis();
             pathRemovalTime += (endTime - startTime);
 
@@ -118,22 +93,9 @@ public class Carver {
         return totalTime;
     }
 
-    // result is an int array of RGB using getRGB
-    private int[][] convertToRGB3(BufferedImage image) {
-        int width = image.getWidth();
-        int height = image.getHeight();
-        int[][] result = new int[width][height];
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++)  {
-                result[x][y] = image.getRGB(x, y);
-            }
-        }
-        return result;
-    }
-
     // I guess when subimages are taken in remove path, the underlying databuffer dimensions aren't changed.
     // we account for that by storing the intiial width as iWidth and using it to map 1d array to 2d
-    private int[][] convertToRGB4(BufferedImage image, int iWidth) {
+    private int[][] convertToRGB(BufferedImage image, int iWidth) {
         int width = image.getWidth();
         int height = image.getHeight();
         int[][] result = new int[width][height];
@@ -277,18 +239,7 @@ public class Carver {
         return minPath;
     }
 
-    private BufferedImage removePath(int[] path, BufferedImage image) {
-        int width = image.getWidth();
-        int height = image.getHeight();
-        for (int y = 0; y < height; y++) {
-            for (int x = path[y]; x < width - 1; x++) {
-                image.setRGB(x, y, image.getRGB(x+1, y));
-            }
-        }
-        return image.getSubimage(0, 0, image.getWidth() - 1, image.getHeight());
-    }
-
-    private BufferedImage removePath2(int[] path, BufferedImage image, int iWidth) {
+    private BufferedImage removePath(int[] path, BufferedImage image, int iWidth) {
         int width = image.getWidth();
         int height = image.getHeight();
         int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
