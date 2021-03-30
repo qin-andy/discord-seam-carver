@@ -42,7 +42,7 @@ public class Listener extends ListenerAdapter {
                 if (splitContent.length > 1) {
                     i = carver.carve("src/main/resources/images/download.png", Integer.parseInt(splitContent[1]));
                 } else {
-                    i = carver.carve("src/main/resources/images/download.png", (int) (message.getAttachments().get(0).getWidth() * 0.25));
+                    i = carver.carve("src/main/resources/images/download.png", (int) (message.getAttachments().get(0).getWidth()*0.25));
                 }
             } catch (IOException e) { //Check this later
                 System.out.print("File not found!");
@@ -51,7 +51,8 @@ public class Listener extends ListenerAdapter {
             if (i == -1) {
                 channel.sendMessage("Smoh..... (cut size is too big...)").queue();
             } else {
-                channel.sendMessage("SMOHOHO!!! (finished!)").addFile(new File("src/main/resources/images/carved.PNG")).queue();
+                channel.sendMessage("SMOHOHO!!! (finished in " + i + " ms!)")
+                        .addFile(new File("src/main/resources/images/carved.PNG")).queue();
             }
         }
     }

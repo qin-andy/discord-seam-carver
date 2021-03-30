@@ -114,13 +114,13 @@ public class Carver {
         System.out.println("Energy mapping Time: " + energyMapTime + " ms");
         System.out.println("Path identification Time: " + shortestSeamTime + " ms");
         System.out.println("Path removal Time: " + pathRemovalTime + " ms");
-        System.out.println("TOTAL TIME:" + convertToRGBTime + energyMapTime + shortestSeamTime + pathRemovalTime + " ms");
+        int totalTime = convertToRGBTime + energyMapTime + shortestSeamTime + pathRemovalTime;
+        System.out.println("TOTAL TIME:" + totalTime + " ms");
 
 
         File outputFile = new File("src/main/resources/images/carved.PNG");
         ImageIO.write(image, "PNG", outputFile);
-        return 1;
-
+        return totalTime;
     }
 
     // Takes a buffered image and converts into a 2d array with Color object for each pixel
