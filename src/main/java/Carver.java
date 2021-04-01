@@ -1,16 +1,10 @@
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
 import java.awt.image.DataBufferInt;
-import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
-import java.io.WriteAbortedException;
 import java.util.Arrays;
-import java.util.PriorityQueue;
-import java.util.Set;
-
 public class Carver {
 
     //TODO: remove testing main statement
@@ -20,8 +14,6 @@ public class Carver {
     }
 
     public int carve(String filePath, int cutSize, int cutSizeY) throws IOException {
-
-        // Reading file using ImageIO read
         File file = new File(filePath);
         BufferedImage image;
         try {
@@ -66,7 +58,6 @@ public class Carver {
 
             long end = System.currentTimeMillis();
             System.out.println("Compression took " + (end - start) + "ms!");
-
         }
 
         // Conversion to ARGB
@@ -91,32 +82,30 @@ public class Carver {
         int pathRemovalTime = 0;
         long iterationStartTime = System.currentTimeMillis();
 
+        int iWidth = image.getWidth(); // Initial width used for navigating the image data buffer
 
-        int iWidth = image.getWidth();
+        for (int i = 0; i < cutSize; i++) { // Main carving
 
-        for (int i = 0; i < cutSize; i++) {
-
-            width = image.getWidth();
+            width = image.getWidth(); // Need to update width and height
             height = image.getHeight();
 
             long startTime = System.currentTimeMillis();
-            //int[][] imageRGB = convertToRGB3(image);
-            int[] imageRGB = convertToRGB(image, iWidth);
+            int[] imageRGB = convertToRGB(image, iWidth); // BufferedImage to RGB values conversion
             long endTime = System.currentTimeMillis();
             convertToRGBTime += (endTime - startTime);
 
             startTime = System.currentTimeMillis();
-            int[] energyMap = createEnergyMap(imageRGB, width, height);
+            int[] energyMap = createEnergyMap(imageRGB, width, height); // RGB Values to Energy Map conversion
             endTime = System.currentTimeMillis();
             energyMapTime += (endTime - startTime);
 
             startTime = System.currentTimeMillis();
-            int[] path = shortestPath(energyMap, width, height);
+            int[] path = shortestPath(energyMap, width, height); // Lowest energy path determination
             endTime = System.currentTimeMillis();
             shortestSeamTime += (endTime - startTime);
 
             startTime = System.currentTimeMillis();
-            image = removePath(path, image, iWidth);
+            image = removePath(path, image, iWidth); // Path removal
             endTime = System.currentTimeMillis();
             pathRemovalTime += (endTime - startTime);
 
@@ -295,8 +284,8 @@ public class Carver {
         // Each [x][y] pair is modelled as a node
         int[] parent = new int[width*height]; // The x value of the node's parent; the y is the child y - 1
         int[] distTo = new int[width*height]; // The shortest distance to the node
-        Arrays.fill(distTo, Integer.MAX_VALUE);
-        for (int i = 0; i < width; i++) {
+        Arrays.fill(distTo, Integer.MAX_VALUE); // Initialize all distances to infinity
+        for (int i = 0; i < width; i++) { // Reinitialize the first row elements as their respective energy
             distTo[i] = energyArray[i];
         }
 
@@ -315,9 +304,9 @@ public class Carver {
                 // For each of the current node's children, check if the path through the current node is shorter
                 for (int i = lower; i < upper + 1; i++) {
                     newDist = distTo[y*width + x] + energyArray[(y+1)*width + x+i];
-                    if (newDist < distTo[(y+1)*width+x+i]) {
-                        distTo[(y+1)*width+x+i] = newDist;
-                        parent[(y+1)*width+x+i] = x;
+                    if (newDist < distTo[(y+1)*width+x+i]) { //if the path through the current node is shorter
+                        distTo[(y+1)*width+x+i] = newDist; // update the node with the newest shortest path
+                        parent[(y+1)*width+x+i] = x; // store the newest shortest path in the parent
                     }
                 }
             }
@@ -328,7 +317,7 @@ public class Carver {
         int minEnergy = distTo[(height-1)*width];
         int minX = 0;
 
-        for (int x = 1; x < width; x++) {
+        for (int x = 1; x < width; x++) { // Find the lowest energy path by looking at the bottom row of nodes
             if (distTo[(height-1)*width+x] < minEnergy) {
                 minX = x;
                 minEnergy = distTo[(height-1)*width+x];
@@ -342,12 +331,12 @@ public class Carver {
         int childX = minX;
 
         int parentX;
-        for (int y = height - 1; y > 0; y--) {
+        for (int y = height - 1; y > 0; y--) { // use the parent array to traverse backwards to find shortest path
             parentX = parent[y*width+childX];
             minPath[y-1] = parentX;
             childX = parentX;
         }
-        return minPath;
+        return minPath; //min path stores x values of the shortest path. y value is inferred from the index
     }
 
     private BufferedImage removePath(int[] path, BufferedImage image, int iWidth) {
