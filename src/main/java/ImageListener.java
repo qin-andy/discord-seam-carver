@@ -10,24 +10,18 @@ import java.io.File;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
-public class Listener extends ListenerAdapter {
+public class ImageListener extends ListenerAdapter {
 
     public void onMessageReceived(MessageReceivedEvent event) {
         if (event.getAuthor().isBot()) return;
-        System.out.println("Message from " +
-                event.getAuthor().getName() +
-                ": " +
-                event.getMessage().getContentRaw()
-        );
         Message message = event.getMessage();
         String content = message.getContentRaw();
         MessageChannel channel = event.getChannel();
-
         String[] splitContent = content.split(" ");
+
         if (splitContent[0].equals("carve") && !message.getAttachments().isEmpty()) {
             try {
                 message.getAttachments().get(0).downloadToFile("src/main/resources/images/download.png").get();
-
             } catch (InterruptedException e) {
 
             } catch (ExecutionException e) {
