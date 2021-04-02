@@ -63,8 +63,12 @@ public class ImageHandler {
     }
 
     // Saves the given BufferedImage as a PNG in the images folder with the given name
-    public void save(BufferedImage image, String name) {
+    public void save(BufferedImage image, String name) throws IOException {
         File outputFile = new File("src/main/resources/images/" + name + ".PNG");
-        ImageIO.write(image, "PNG", outputFile);
+        try {
+            ImageIO.write(image, "PNG", outputFile);
+        } catch (IOException e) {
+
+        }
     }
 }
