@@ -28,8 +28,8 @@ public class ForwardsEnergy implements EnergyStrategy{
                 }
 
                 int leftB = colorLeft & 0xff;
-                int leftG = (colorLeft & 0xff00) << 8;
-                int leftR = (colorLeft & 0xff0000) << 16;
+                int leftG = (colorLeft & 0xff00) >> 8;
+                int leftR = (colorLeft & 0xff0000) >> 16;
 
                 int rightB = colorRight & 0xff;
                 int rightG = (colorRight & 0xff00) >> 8;
@@ -97,8 +97,8 @@ public class ForwardsEnergy implements EnergyStrategy{
     // Takes two RGB int values and calculates the color difference between them
     private int colorDifference(int a, int b) {
         int aB = a & 0xff;
-        int aG = (a & 0xff00) << 8;
-        int aR = (a & 0xff0000) << 16;
+        int aG = (a & 0xff00) >> 8;
+        int aR = (a & 0xff0000) >> 16;
 
         int bB = b & 0xff;
         int bG = (b & 0xff00) >> 8;

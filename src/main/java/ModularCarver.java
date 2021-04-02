@@ -2,6 +2,7 @@ import energy.BackwardsEnergy;
 import energy.EnergyStrategy;
 import energy.ForwardsEnergy;
 import pathfinder.DefaultPathfinder;
+import pathfinder.ForwardsPathfinder;
 import pathfinder.PathfinderStrategy;
 
 import java.awt.image.BufferedImage;
@@ -22,7 +23,7 @@ public class ModularCarver {
     private int height;
 
     public static void main(String[] args) {
-        String filePath = "src/main/resources/images/hokusai.jpg";
+        String filePath = "src/main/resources/images/lapp.png";
         ModularCarver carver = new ModularCarver(filePath, new BackwardsEnergy(), new DefaultPathfinder());
         carver.carve(200, 0);
     }
