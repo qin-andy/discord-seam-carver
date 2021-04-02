@@ -1,9 +1,12 @@
 
+import energy.EnergyStrategy;
+import energy.ForwardsEnergy;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import pathfinder.ForwardsPathfinder;
 
 import java.io.IOException;
 import java.io.File;
@@ -43,7 +46,7 @@ public class ImageListener extends ListenerAdapter {
                 } else {
                     Message.Attachment attachment = message.getAttachments().get(0);
                     i = carver.carve("src/main/resources/images/download.png",
-                            (int) (attachment.getWidth()*0.25), 0);
+                            (int) (attachment.getWidth()*0.3), 0);
                 }
             } catch (IOException e) { //Check this later
                 channel.sendMessage("smoh...,, (there was an error downloading the image!)").queue();
@@ -68,39 +71,18 @@ public class ImageListener extends ListenerAdapter {
             } catch (ExecutionException e) {
 
             }
-
-            Carver carver = new Carver();
-            int i = 0;
+            ModularCarver carver = new ModularCarver("src/main/resources/images/download.png",
+                    new ForwardsEnergy(), new ForwardsPathfinder());
             try {
                 channel.sendMessage("SMOH!!! (begins chopping)")
                         .addFile(new File("src/main/resources/graphics/small_chop.gif")).queue();
-                if (splitContent.length > 1) {
-                    int sizeX = Integer.parseInt(splitContent[1]);
-                    int sizeY = 0;
-                    if (splitContent.length > 2) {
-                        sizeY = Integer.parseInt(splitContent[2]);
-                    }
-                    i = carver.carve("src/main/resources/images/download.png", sizeX, sizeY);
-                } else {
                     Message.Attachment attachment = message.getAttachments().get(0);
-                    i = carver.carve("src/main/resources/images/download.png",
-                            (int) (attachment.getWidth()*0.25), 0);
-                }
-            } catch (IOException e) { //Check this later
-                channel.sendMessage("smoh...,, (there was an error downloading the image!)").queue();
+                    carver.carve((int) (attachment.getWidth()*0.3), 0);
             } catch (NumberFormatException e) {
                 channel.sendMessage("smoh.,,, (invalid size provided");
             }
-
-            if (i == -1) {
-                channel.sendMessage("Smoh..... (cut size is too big...)").queue();
-            } else if (i == -2) {
-                channel.sendMessage("smoh.. (unable to read file..)").queue();
-            }
-            else {
-                channel.sendMessage("SMOHOHO!!! (finished in " + i + " ms!)")
-                        .addFile(new File("src/main/resources/images/carved.PNG")).queue();
-            }
+            channel.sendMessage("SMOHOHO!!!") // TODO: add error handling and timing to ModularCarver
+                    .addFile(new File("src/main/resources/images/carved.PNG")).queue();
         }
     }
 }
