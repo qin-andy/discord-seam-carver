@@ -24,9 +24,9 @@ public class BackwardsEnergy {
                     next = ARGBValues[y * width + x + 1];
                 }
 
-                int pB = prev & 0xFF;
-                int pG = (prev & 0xFF) << 8;
-                int pR = (prev & 0xFF) << 16;
+                int pB = prev & 0xff;
+                int pG = (prev & 0xff00) << 8;
+                int pR = (prev & 0xff0000) << 16;
 
                 int nB = next & 0xff;
                 int nG = (next & 0xff00) >> 8;
