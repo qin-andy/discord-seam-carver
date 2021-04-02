@@ -3,7 +3,7 @@ package pathfinder;
 import java.util.Arrays;
 
 // The default pathfinder for BackwardsEnergy strategy
-public class DefaultPathfinder {
+public class DefaultPathfinder implements PathfinderStrategy {
     public int[] shortestPath(int energy[], int width, int height) {
         // Each [x][y] pair is modelled as a node
         int[] parent = new int[width*height]; // The x value of the node's parent; the y is the child y - 1

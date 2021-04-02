@@ -21,4 +21,8 @@ public class ARGBExtractor {
         }
         return ARGBValues;
     }
+
+    public void setInitialWidth(int newWidth) {
+        initialWidth = newWidth;
+    }
 }

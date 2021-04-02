@@ -1,6 +1,6 @@
 package energy;
 
-public class ForwardsEnergy {
+public class ForwardsEnergy implements EnergyStrategy{
     public static final int MAX_ENERGY = 390150; // Maximum energy value for any pixel
     // Builds an energy map based on the "Forwards Energy" described in the Shamir Avidan Rubinstein paper
     // For use with Forwards Energy Pathfinder

@@ -22,4 +22,8 @@ public class PathRemover {
         }
         return image.getSubimage(0, 0, image.getWidth() - 1, image.getHeight());
     }
+
+    public void setInitialWidth(int newWidth) {
+        initialWidth = newWidth;
+    }
 }
