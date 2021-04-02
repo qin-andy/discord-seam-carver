@@ -9,16 +9,16 @@ public class ARGBExtractor {
 
     // Takes an image and reads its ARGB int values into an array
     // Returns a 1d array with ARGB values of the image on it
-    public int[] extractRGB(BufferedImage image) {
+    public int[] extractARGB(BufferedImage image) {
         int width = image.getWidth();
         int height = image.getHeight();
-        int[] result = new int[width*height];
+        int[] ARGBValues = new int[width*height];
         int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++)  {
-                result[y*width + x] = pixels[y*initialWidth + x];
+                ARGBValues[y*width + x] = pixels[y*initialWidth + x]; // (x,y) coordinate is found at index (y*width + x)
             }
         }
-        return result;
+        return ARGBValues;
     }
 }
