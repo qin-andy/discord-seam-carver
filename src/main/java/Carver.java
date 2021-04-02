@@ -95,7 +95,7 @@ public class Carver {
             convertToRGBTime += (endTime - startTime);
 
             startTime = System.currentTimeMillis();
-            int[] energyMap = createEnergyMap(imageRGB, width, height); // RGB Values to Energy Map conversion
+            int[] energyMap = createEnergyMap2(imageRGB, width, height); // RGB Values to Energy Map conversion
             endTime = System.currentTimeMillis();
             energyMapTime += (endTime - startTime);
 
@@ -278,6 +278,49 @@ public class Carver {
         return energyArray;
     }
 
+    // More readable, but slower
+    private int[] createEnergyMap2(int[] colorArray, int width, int height) {
+        int[] energyArray = new int[width*height];
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++)  {
+                // Typed out for readability
+                // Energy mapping algorithm is Δx^2(x, y) + Δy^2(x, y)
+                int prev;
+                int next;
+
+                // Edges are trated as adjacent to the opposite side
+                if (x == 0) {
+                    prev = colorArray[y*width + (width-1)];
+                    next = colorArray[y*width + x+1];
+                } else if (x == width - 1) {
+                    prev = colorArray[y*width + x - 1];
+                    next = colorArray[y*width];
+                } else {
+                    prev = colorArray[y*width + x-1];
+                    next = colorArray[y*width + x+1];
+                }
+
+
+                int xDeltaSquare = colorDifference(prev, next);
+
+                if (y == 0) {
+                    prev = colorArray[(height-1)*width + x];
+                    next = colorArray[width*(y+1) + x];
+                } else if (y == height - 1) {
+                    prev = colorArray[(y-1)*width + x];
+                    next = colorArray[x];
+                } else {
+                    prev = colorArray[(y-1)*width + x];
+                    next = colorArray[(y+1)*width + x];
+                }
+
+                int yDeltaSquare = colorDifference(prev, next);
+                energyArray[y*width + x] = xDeltaSquare + yDeltaSquare;
+            }
+        }
+        return energyArray;
+    }
+
 
     private int[] shortestPath(int[] energyArray, int width, int height) {
 
@@ -351,6 +394,21 @@ public class Carver {
             }
         }
         return image.getSubimage(0, 0, image.getWidth() - 1, image.getHeight());
+    }
+
+    private int colorDifference(int a, int b) {
+        int aB = a & 0xff;
+        int aG = (a & 0xff00) << 8;
+        int aR = (a & 0xff0000) << 16;
+
+        int bB = b & 0xff;
+        int bG = (b & 0xff00) >> 8;
+        int bR = (b & 0xff0000) >> 16;
+
+        int deltaR = (int) Math.pow(aR - bR, 2);
+        int deltaG = (int) Math.pow(aG - bG, 2);
+        int deltaB = (int) Math.pow(aB - bB, 2);
+        return deltaR + deltaG + deltaB;
     }
 }
 

@@ -1,7 +1,7 @@
 package energy;
 
 public class ForwardsEnergy {
-
+    public static final int MAX_ENERGY = 390150; // Maximum energy value for any pixel
     // Builds an energy map based on the "Forwards Energy" described in the Shamir Avidan Rubinstein paper
     // For use with Forwards Energy Pathfinder
     public int[] calculateEnergy(int[] ARGBValues, int width, int height) {
@@ -69,8 +69,44 @@ public class ForwardsEnergy {
                 int baseEnergy = xDeltaSquare + yDeltaSquare;
 
                 energyArray[3*y*width + 3*x] = -1;
+                int forwardsCost;
+
+                // Lower Left Path Energy, left and down will be adjacent
+                if (x == 0) {
+                    energyArray[3*y*width + 3*x] = MAX_ENERGY;
+                } else {
+                    forwardsCost = colorDifference(colorLeft, colorDown) + xDeltaSquare;
+                    energyArray[3*y*width + 3*x] = forwardsCost + baseEnergy;
+                }
+
+                // Middle Path Energy
+                energyArray[3*y*width + 3*x + 1] = baseEnergy + xDeltaSquare;
+
+                // Lower Right Path Energy, right and down will be adjacent
+                if (x == width - 1) {
+                    energyArray[3*y*width + 3*x + 2] = MAX_ENERGY;
+                } else {
+                    forwardsCost = colorDifference(colorRight, colorDown) + xDeltaSquare;
+                    energyArray[3*y*width + 3*x + 2] = forwardsCost + baseEnergy;
+                }
             }
         }
         return energyArray;
+    }
+
+    // Takes two RGB int values and calculates the color difference between them
+    private int colorDifference(int a, int b) {
+        int aB = a & 0xff;
+        int aG = (a & 0xff00) << 8;
+        int aR = (a & 0xff0000) << 16;
+
+        int bB = b & 0xff;
+        int bG = (b & 0xff00) >> 8;
+        int bR = (b & 0xff0000) >> 16;
+
+        int deltaR = (int) Math.pow(aR - bR, 2);
+        int deltaG = (int) Math.pow(aG - bG, 2);
+        int deltaB = (int) Math.pow(aB - bB, 2);
+        return deltaR + deltaG + deltaB;
     }
 }
