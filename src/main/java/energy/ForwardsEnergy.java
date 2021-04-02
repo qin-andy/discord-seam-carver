@@ -71,22 +71,22 @@ public class ForwardsEnergy {
                 energyArray[3*y*width + 3*x] = -1;
                 int forwardsCost;
 
-                // Lower Left Path Energy, left and down will be adjacent
+                // Entering from Upper Right Energy, left and down will be adjacent
                 if (x == 0) {
                     energyArray[3*y*width + 3*x] = MAX_ENERGY;
                 } else {
-                    forwardsCost = colorDifference(colorLeft, colorDown) + xDeltaSquare;
+                    forwardsCost = colorDifference(colorRight, colorUp) + xDeltaSquare;
                     energyArray[3*y*width + 3*x] = forwardsCost + baseEnergy;
                 }
 
-                // Middle Path Energy
+                // Entering from Upper Energy
                 energyArray[3*y*width + 3*x + 1] = baseEnergy + xDeltaSquare;
 
-                // Lower Right Path Energy, right and down will be adjacent
+                // Entering from Upper Left Path Energy, right and down will be adjacent
                 if (x == width - 1) {
                     energyArray[3*y*width + 3*x + 2] = MAX_ENERGY;
                 } else {
-                    forwardsCost = colorDifference(colorRight, colorDown) + xDeltaSquare;
+                    forwardsCost = colorDifference(colorLeft, colorUp) + xDeltaSquare;
                     energyArray[3*y*width + 3*x + 2] = forwardsCost + baseEnergy;
                 }
             }

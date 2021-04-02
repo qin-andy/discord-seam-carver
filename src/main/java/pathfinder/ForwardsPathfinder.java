@@ -2,15 +2,14 @@ package pathfinder;
 
 import java.util.Arrays;
 
-// The default pathfinder for BackwardsEnergy strategy
-public class DefaultPathfinder {
+public class ForwardsPathfinder {
     public int[] shortestPath(int energy[], int width, int height) {
         // Each [x][y] pair is modelled as a node
         int[] parent = new int[width*height]; // The x value of the node's parent; the y is the child y - 1
         int[] distTo = new int[width*height]; // The shortest distance to the node
         Arrays.fill(distTo, Integer.MAX_VALUE); // Initialize all distances to infinity
         for (int i = 0; i < width; i++) { // Reinitialize the first row elements as their respective energy
-            distTo[i] = energy[i];
+            distTo[i] = energy[3*i + 1];
         }
 
         int newDist = 0;
@@ -27,7 +26,7 @@ public class DefaultPathfinder {
 
                 // For each of the current node's children, check if the path through the current node is shorter
                 for (int i = lower; i < upper + 1; i++) {
-                    newDist = distTo[y*width + x] + energy[(y+1)*width + x+i];
+                    newDist = distTo[y*width + x] + energy[3*(y+1)*width + 3*x+i + 1];
                     if (newDist < distTo[(y+1)*width+x+i]) { //if the path through the current node is shorter
                         distTo[(y+1)*width+x+i] = newDist; // update the node with the newest shortest path
                         parent[(y+1)*width+x+i] = x; // store the newest shortest path in the parent
