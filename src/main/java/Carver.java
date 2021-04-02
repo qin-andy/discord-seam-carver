@@ -10,7 +10,7 @@ public class Carver {
     //TODO: remove testing main statement
     public static void main(String[] args) throws IOException { // For testing
         Carver carver = new Carver();
-        carver.carve("src/main/resources/images/lapp.png", 200, 0);
+        carver.carve("src/main/resources/images/lapp.png", 300, 300);
     }
 
     public int carve(String filePath, int cutSize, int cutSizeY) throws IOException {
@@ -277,7 +277,6 @@ public class Carver {
     }
 
     private int[] shortestPath(int[] energyArray, int width, int height) {
-
         // Each [x][y] pair is modelled as a node
         int[] parent = new int[width*height]; // The x value of the node's parent; the y is the child y - 1
         int[] distTo = new int[width*height]; // The shortest distance to the node

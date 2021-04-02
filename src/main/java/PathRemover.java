@@ -3,6 +3,7 @@ import java.awt.image.DataBufferInt;
 
 public class PathRemover {
     private int initialWidth;
+
     public PathRemover(int iWidth) {
         initialWidth = iWidth;
     }

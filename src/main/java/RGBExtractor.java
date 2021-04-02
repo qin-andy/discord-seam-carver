@@ -1,9 +1,9 @@
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
-public class ARGBExtractor {
+public class RGBExtractor {
     private int initialWidth; // Tracks the width of the inital image, used to navigate the data buffer
-    public ARGBExtractor(int iWidth) {
+    public RGBExtractor(int iWidth) {
         initialWidth = iWidth;
     }
 
