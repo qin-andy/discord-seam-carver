@@ -232,13 +232,13 @@ public class Carver {
                     next = colorArray[y*width + x+1];
                 }
 
-                int pB = prev & 0xFF;
-                int pG = (prev & 0xFF) >> 8;
-                int pR = (prev & 0xFF) >> 16;
+                int pB = prev & 0xff;
+                int pG = (prev & 0xff00) >> 8;
+                int pR = (prev & 0xff0000) >> 16;
 
                 int nB = next & 0xFF;
-                int nG = (next & 0xFF) >> 8;
-                int nR = (next & 0xFF) >> 16;
+                int nG = (next & 0xff00) >> 8;
+                int nR = (next & 0xff0000) >> 16;
 
                 int deltaR = (int) Math.pow(pR - nR, 2);
                 int deltaG = (int) Math.pow(pG - nG, 2);
@@ -258,13 +258,13 @@ public class Carver {
                     next = colorArray[(y+1)*width + x];
                 }
 
-                pB = prev & 0xFF;
-                pG = (prev & 0xff) >> 8;
-                pR = (prev & 0xff) >> 16;
+                pB = prev & 0xff;
+                pG = (prev & 0xff00) >> 8;
+                pR = (prev & 0xff0000) >> 16;
 
-                nB = next & 0xFF;
-                nG = (next & 0xFF) >> 8;
-                nR = (next & 0xFF) >> 16;
+                nB = next & 0xff;
+                nG = (next & 0xff00) >> 8;
+                nR = (next & 0xff0000) >> 16;
 
                 deltaR = (int) Math.pow(pR - nR, 2);
                 deltaG = (int) Math.pow(pG - nG, 2);
