@@ -5,13 +5,16 @@ import energy.ForwardsEnergy;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.jetbrains.annotations.NotNull;
 import pathfinder.DefaultPathfinder;
 import pathfinder.ForwardsPathfinder;
 
 import java.io.IOException;
 import java.io.File;
+import java.nio.channels.Channel;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
@@ -19,41 +22,72 @@ public class ImageListener extends ListenerAdapter {
 
     public void onMessageReceived(MessageReceivedEvent event) {
         if (event.getAuthor().isBot()) return;
+
         Message message = event.getMessage();
         String content = message.getContentRaw();
         MessageChannel channel = event.getChannel();
-        String[] splitContent = content.split(" ");
 
-        if ((splitContent[0].equals("carve") || splitContent[0].equals("fcarve")) && !message.getAttachments().isEmpty()) {
+        if (false) { //TODO: add working flags during carving
+            channel.sendMessage("smoh.... (i'm busy!!! try again later..)").queue();
+            channel.sendTyping().queue();
+            return;
+        }
+
+
+        String[] splitContent = content.split(" ");
+        String userCommand = splitContent[0];
+
+        if (isValidCommand(userCommand) && !message.getAttachments().isEmpty()) {
+            Message.Attachment attachment = message.getAttachments().get(0);
             try {
-                if (!message.getAttachments().get(0).isImage()) {
-                    channel.sendMessage("smoh.... (i dont recognize this format...)");
+                if (!attachment.isImage()) {
+                    channel.sendMessage("smoh.... (i dont recognize this file format...)")
+                            .addFile(new File("src/main/resources/graphics/smoh_apology.jpg"))
+                            .queue();
+                    return;
                 }
+
+                String path = "src/main/resources/images/download.png";
+                attachment.downloadToFile(path).get();
 
                 channel.sendMessage("SMOH!!! (begins chopping)")
                         .addFile(new File("src/main/resources/graphics/small_chop.gif")).queue();
-                message.getAttachments().get(0).downloadToFile("src/main/resources/images/download.png").get();
-                System.out.println("File downloaded!");
-                String path = "src/main/resources/images/download.png";
+                channel.sendTyping().queue(); // TOOD: double check if this actually works?
 
                 ModularCarver carver = null;
-                if (splitContent[0].equals("carve")) {
-                    carver = new ModularCarver(path, new BackwardsEnergy(), new DefaultPathfinder());
-                } else if (splitContent[0].equals("fcarve")) {
-                    carver = new ModularCarver(path, new ForwardsEnergy(), new ForwardsPathfinder());
-                } else { // invalid command!
-                    channel.sendMessage("smoh.... (i dont know what that word means...)").queue();
-                    return;
+                switch (userCommand) {
+                    case "carve" -> carver = new ModularCarver(path, new BackwardsEnergy(), new DefaultPathfinder());
+                    case "fcarve" -> carver = new ModularCarver(path, new ForwardsEnergy(), new ForwardsPathfinder());
+                    default -> {
+                        channel.sendMessage("smoh.... (i dont know how to do that... yet! (TBI))")
+                                .addFile(new File("src/main/resources/graphics/smoh_apology.jpg"))
+                                .queue();
+                        return;
+                    }
                 }
                 System.out.println("Constructed carver!");
 
-                double xCut = 0.25;
+                double xCut = 0; // TODO: whats the convention on initializing empty variables?
                 double yCut = 0;
-                if (splitContent.length == 2) {
-                    xCut = Double.parseDouble(splitContent[1]);
-                } else if (splitContent.length == 3) {
-                    xCut = Double.parseDouble(splitContent[1]);
-                    yCut = Double.parseDouble(splitContent[2]);
+                switch (splitContent.length) {
+                    case 1 -> xCut = 0.25;
+                    case 2 -> xCut = Double.parseDouble(splitContent[1]);
+                    case 3 -> {
+                        xCut = Double.parseDouble(splitContent[1]);
+                        yCut = Double.parseDouble(splitContent[2]);
+                        if (xCut >= attachment.getWidth() || yCut > attachment.getHeight()) {
+                            channel.sendMessage("smoh.... (the cut is too big!)")
+                                    .addFile(new File("src/main/resources/graphics/smoh_apology.jpg"))
+                                    .queue();
+                            return;
+                        }
+                    }
+                    default -> {
+                        channel.sendMessage("smoh.... (too many arguments!)")
+                                .addFile(new File("src/main/resources/graphics/smoh_apology.jpg"))
+                                .queue();
+                        return;
+                    }
                 }
 
                 if (xCut >= 1 && yCut >= 1) { // TODO: allow combination of pixel and ratio cuts
@@ -62,7 +96,9 @@ public class ImageListener extends ListenerAdapter {
                     System.out.println("Smoo.. beginning ratio cut!");
                     carver.carve(xCut, yCut);
                 } else { // Invalid cut specification!
-                    channel.sendMessage("smoh.... (the cut numbers you gave dont make any sense..)").queue();
+                    channel.sendMessage("smoh.... (the cut numbers you gave dont make any sense..)")
+                            .addFile(new File("src/main/resources/graphics/smoh_apology.jpg"))
+                            .queue();
                     return;
                 }
                 channel.sendMessage("SMOHOHO!!!") // TODO: add error handling and timing to ModularCarver
@@ -71,7 +107,20 @@ public class ImageListener extends ListenerAdapter {
 
             } catch (ExecutionException e) {
 
+            } catch (NumberFormatException e) {
+                channel.sendMessage("smoh.... (please specify actual numbers!!)")
+                        .addFile(new File("src/main/resources/graphics/smoh_apology.jpg"))
+                        .queue();
             }
         }
+    }
+
+    private boolean isValidCommand(String command) {
+        return command.equals("carve") || command.equals(("fcarve")); //TODO: replace with Set contains call?
+    }
+
+    private void sendSadSmoh(MessageChannel channel) {
+        channel.sendMessage("sorry.... :===(")
+                .addFile(new File("src/main/resources/graphics/smoh_apology.jpg")).queue();
     }
 }

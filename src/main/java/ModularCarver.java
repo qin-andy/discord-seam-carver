@@ -78,7 +78,7 @@ public class ModularCarver {
         // Step 3: Enter carving loop for vertical cuts
         image = cutVerticalSeams(xCut);
 
-        // Step 4: TODO: transpose image and repeat for horizontal seams then transpose back
+        // Step 4: Tranpose for horizontal cuts
         if (yCut > 0) {
             image = handler.transpose(image);
             image = cutVerticalSeams(yCut);

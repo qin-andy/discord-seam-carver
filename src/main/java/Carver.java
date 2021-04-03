@@ -10,7 +10,7 @@ public class Carver {
     //TODO: remove testing main statement
     public static void main(String[] args) throws IOException { // For testing
         Carver carver = new Carver();
-        carver.carve("src/main/resources/images/lapp.png", 300, 300);
+        carver.carve("src/main/resources/images/download.png", 300, 300);
     }
 
     public int carve(String filePath, int cutSize, int cutSizeY) throws IOException {
