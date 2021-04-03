@@ -36,13 +36,12 @@ public class ModularCarver {
     }
 
     public ModularCarver(String imagePath, EnergyStrategy e, PathfinderStrategy p) {
-
         // Think about: should there be one carver for each image? or one carver to handle all images?
         handler = new ImageHandler();
         try {
             image = handler.read(imagePath);
         } catch (IOException e1) {
-
+            System.out.println("Error reading file!");
         }
         width = image.getWidth();
         height = image.getHeight();
@@ -74,7 +73,6 @@ public class ModularCarver {
 
             width = image.getWidth();
             height = image.getHeight();
-
         }
 
         // Step 3: Enter carving loop for vertical cuts
