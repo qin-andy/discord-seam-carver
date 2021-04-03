@@ -41,6 +41,8 @@ public class ImageListener extends ListenerAdapter {
             Message.Attachment attachment = message.getAttachments().get(0);
             try {
                 if (!attachment.isImage()) {
+                    // TODO: refactor smoh apology sending
+                    // TODO: testing for errors
                     channel.sendMessage("smoh.... (i dont recognize this file format...)")
                             .addFile(new File("src/main/resources/graphics/smoh_apology.jpg"))
                             .queue();
