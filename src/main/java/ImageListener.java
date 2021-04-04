@@ -41,11 +41,7 @@ public class ImageListener extends ListenerAdapter {
             Message.Attachment attachment = message.getAttachments().get(0);
             try {
                 if (!attachment.isImage()) {
-                    // TODO: refactor smoh apology sending
-                    // TODO: testing for errors
-                    channel.sendMessage("smoh.... (i dont recognize this file format...)")
-                            .addFile(new File("src/main/resources/graphics/smoh_apology.jpg"))
-                            .queue();
+                    sendSadSmoh(channel, "smoh.... (i dont recognize this file format..)");
                     return;
                 }
 
@@ -61,9 +57,7 @@ public class ImageListener extends ListenerAdapter {
                     case "carve" -> carver = new ModularCarver(path, new BackwardsEnergy(), new DefaultPathfinder());
                     case "fcarve" -> carver = new ModularCarver(path, new ForwardsEnergy(), new ForwardsPathfinder());
                     default -> {
-                        channel.sendMessage("smoh.... (i dont know how to do that... yet! (TBI))")
-                                .addFile(new File("src/main/resources/graphics/smoh_apology.jpg"))
-                                .queue();
+                        sendSadSmoh(channel, "smoh.... (i dont know how to do that... yet!)");
                         return;
                     }
                 }
@@ -77,17 +71,13 @@ public class ImageListener extends ListenerAdapter {
                     case 3 -> {
                         xCut = Double.parseDouble(splitContent[1]);
                         yCut = Double.parseDouble(splitContent[2]);
-                        if (xCut >= attachment.getWidth() || yCut > attachment.getHeight()) {
-                            channel.sendMessage("smoh.... (the cut is too big!)")
-                                    .addFile(new File("src/main/resources/graphics/smoh_apology.jpg"))
-                                    .queue();
+                        if (xCut >= attachment.getWidth() || yCut >= attachment.getHeight()) {
+                            sendSadSmoh(channel, "smoh.... (the cut size is too big!)");
                             return;
                         }
                     }
                     default -> {
-                        channel.sendMessage("smoh.... (too many arguments!)")
-                                .addFile(new File("src/main/resources/graphics/smoh_apology.jpg"))
-                                .queue();
+                        sendSadSmoh(channel, "smoh.... (too many arguments!)");
                         return;
                     }
                 }
@@ -98,9 +88,7 @@ public class ImageListener extends ListenerAdapter {
                     System.out.println("Smoo.. beginning ratio cut!");
                     carver.carve(xCut, yCut);
                 } else { // Invalid cut specification!
-                    channel.sendMessage("smoh.... (the cut numbers you gave dont make any sense..)")
-                            .addFile(new File("src/main/resources/graphics/smoh_apology.jpg"))
-                            .queue();
+                    sendSadSmoh(channel, "smoh.... (the cut numbers you gave dont make any sense..)");
                     return;
                 }
                 channel.sendMessage("SMOHOHO!!!") // TODO: add error handling and timing to ModularCarver
@@ -110,9 +98,7 @@ public class ImageListener extends ListenerAdapter {
             } catch (ExecutionException e) {
 
             } catch (NumberFormatException e) {
-                channel.sendMessage("smoh.... (please specify actual numbers!!)")
-                        .addFile(new File("src/main/resources/graphics/smoh_apology.jpg"))
-                        .queue();
+                sendSadSmoh(channel, "smoh.... (please specify actual numbers!!)");
             }
         }
     }
@@ -121,8 +107,8 @@ public class ImageListener extends ListenerAdapter {
         return command.equals("carve") || command.equals(("fcarve")); //TODO: replace with Set contains call?
     }
 
-    private void sendSadSmoh(MessageChannel channel) {
-        channel.sendMessage("sorry.... :===(")
+    private void sendSadSmoh(MessageChannel channel, String msg) {
+        channel.sendMessage(msg)
                 .addFile(new File("src/main/resources/graphics/smoh_apology.jpg")).queue();
     }
 }
