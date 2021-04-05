@@ -19,6 +19,12 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 public class ImageListener extends ListenerAdapter {
+    private Boolean isWorking; // TODO: look into flag design patterns? action blocking?
+
+    public ImageListener() {
+        super();
+        isWorking = false;
+    }
 
     public void onMessageReceived(MessageReceivedEvent event) {
         if (event.getAuthor().isBot()) return;
@@ -27,17 +33,19 @@ public class ImageListener extends ListenerAdapter {
         String content = message.getContentRaw();
         MessageChannel channel = event.getChannel();
 
-        if (false) { //TODO: add working flags during carving
-            channel.sendMessage("smoh.... (i'm busy!!! try again later..)").queue();
-            channel.sendTyping().queue();
-            return;
-        }
 
 
         String[] splitContent = content.split(" ");
         String userCommand = splitContent[0];
 
         if (isValidCommand(userCommand) && !message.getAttachments().isEmpty()) {
+            if (isWorking) {
+                sendSadSmoh(channel, "smoh.. (i'm busy handling someone elses image... try again later!");
+                isWorking = true; // TODO: more elegant way of adjustning isWorking flag
+                return;
+            }
+            isWorking = true;
+
             Message.Attachment attachment = message.getAttachments().get(0);
             try {
                 if (!attachment.isImage()) {
@@ -46,7 +54,7 @@ public class ImageListener extends ListenerAdapter {
                 }
 
                 String path = "src/main/resources/images/download.png";
-                attachment.downloadToFile(path).get();
+                attachment.downloadToFile(path).get(); // TODO: security concerns? Could this lead to code injection?
 
                 channel.sendMessage("SMOH!!! (begins chopping)")
                         .addFile(new File("src/main/resources/graphics/small_chop.gif")).queue();
@@ -71,15 +79,16 @@ public class ImageListener extends ListenerAdapter {
                     case 3 -> {
                         xCut = Double.parseDouble(splitContent[1]);
                         yCut = Double.parseDouble(splitContent[2]);
-                        if (xCut >= attachment.getWidth() || yCut >= attachment.getHeight()) {
-                            sendSadSmoh(channel, "smoh.... (the cut size is too big!)");
-                            return;
-                        }
                     }
                     default -> {
                         sendSadSmoh(channel, "smoh.... (too many arguments!)");
                         return;
                     }
+                }
+
+                if (xCut >= attachment.getWidth() || yCut >= attachment.getHeight()) {
+                    sendSadSmoh(channel, "smoh.... (the cut size is too big!)");
+                    return;
                 }
 
                 if (xCut >= 1 && yCut >= 1) { // TODO: allow combination of pixel and ratio cuts
@@ -93,10 +102,11 @@ public class ImageListener extends ListenerAdapter {
                 }
                 channel.sendMessage("SMOHOHO!!!") // TODO: add error handling and timing to ModularCarver
                         .addFile(new File("src/main/resources/images/carved.PNG")).queue();
+                isWorking = false; // RESETTING WORKING TAG
             } catch (InterruptedException e) {
-
+                sendSadSmoh(channel, "smoh.... (something got interrupted!)");
             } catch (ExecutionException e) {
-
+                sendSadSmoh(channel, "smoh.... (please specify actual numbers!!)");
             } catch (NumberFormatException e) {
                 sendSadSmoh(channel, "smoh.... (please specify actual numbers!!)");
             }
@@ -107,8 +117,10 @@ public class ImageListener extends ListenerAdapter {
         return command.equals("carve") || command.equals(("fcarve")); //TODO: replace with Set contains call?
     }
 
+
     private void sendSadSmoh(MessageChannel channel, String msg) {
         channel.sendMessage(msg)
                 .addFile(new File("src/main/resources/graphics/smoh_apology.jpg")).queue();
+        isWorking = false;
     }
 }
