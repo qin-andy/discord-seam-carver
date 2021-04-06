@@ -56,9 +56,8 @@ public class ImageListener extends ListenerAdapter {
                 String path = "src/main/resources/images/download.png";
                 attachment.downloadToFile(path).get(); // TODO: security concerns? Could this lead to code injection?
 
-                MessageAction responseMsg = channel.sendMessage("SMOH!!! (begins chopping)")
-                        .addFile(new File("src/main/resources/graphics/small_chop.gif"));
-                responseMsg.queue();
+                channel.sendMessage("SMOH!!! (begins chopping)")
+                        .addFile(new File("src/main/resources/graphics/small_chop.gif")).queue();
                 channel.sendTyping().queue();
 
                 ModularCarver carver = null;
@@ -91,9 +90,15 @@ public class ImageListener extends ListenerAdapter {
                     return;
                 }
 
-                if (xCut >= 1 && yCut >= 1) { // TODO: allow combination of pixel and ratio cuts
-                    carver.carve((int) xCut, (int) yCut);
-                } else if (xCut >= 0 && yCut >= 0 && xCut < 1 && yCut < 1) {
+                if (xCut > 1) {
+                    xCut /= attachment.getWidth();
+                }
+                if (yCut > 1) {
+                    yCut /= attachment.getHeight();
+                }
+
+
+                if (xCut >= 0 && yCut >= 0 && xCut < 1 && yCut < 1) {
                     System.out.println("Smoo.. beginning ratio cut!");
                     carver.carve(xCut, yCut);
                 } else { // Invalid cut specification!
