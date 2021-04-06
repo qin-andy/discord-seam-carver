@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.jetbrains.annotations.NotNull;
 import pathfinder.DefaultPathfinder;
 import pathfinder.ForwardsPathfinder;
@@ -33,17 +34,16 @@ public class ImageListener extends ListenerAdapter {
         String content = message.getContentRaw();
         MessageChannel channel = event.getChannel();
 
-
-
         String[] splitContent = content.split(" ");
         String userCommand = splitContent[0];
 
         if (isValidCommand(userCommand) && !message.getAttachments().isEmpty()) {
             if (isWorking) {
                 sendSadSmoh(channel, "smoh.. (i'm busy handling someone elses image... try again later!");
-                isWorking = true; // TODO: more elegant way of adjustning isWorking flag
+                isWorking = true;
                 return;
             }
+
             isWorking = true;
 
             Message.Attachment attachment = message.getAttachments().get(0);
@@ -56,8 +56,9 @@ public class ImageListener extends ListenerAdapter {
                 String path = "src/main/resources/images/download.png";
                 attachment.downloadToFile(path).get(); // TODO: security concerns? Could this lead to code injection?
 
-                channel.sendMessage("SMOH!!! (begins chopping)")
-                        .addFile(new File("src/main/resources/graphics/small_chop.gif")).queue();
+                MessageAction responseMsg = channel.sendMessage("SMOH!!! (begins chopping)")
+                        .addFile(new File("src/main/resources/graphics/small_chop.gif"));
+                responseMsg.queue(); // TODO: add message deletion?
                 channel.sendTyping().queue(); // TOOD: double check if this actually works?
 
                 ModularCarver carver = null;
@@ -106,9 +107,9 @@ public class ImageListener extends ListenerAdapter {
             } catch (InterruptedException e) {
                 sendSadSmoh(channel, "smoh.... (something got interrupted!)");
             } catch (ExecutionException e) {
-                sendSadSmoh(channel, "smoh.... (please specify actual numbers!!)");
+                sendSadSmoh(channel, "smoh.... (something happened... (Execution Exception!))");
             } catch (NumberFormatException e) {
-                sendSadSmoh(channel, "smoh.... (please specify actual numbers!!)");
+                sendSadSmoh(channel, "smoh.... (please specify valid numbers (doubles)!!)");
             }
         }
     }
