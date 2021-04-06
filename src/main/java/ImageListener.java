@@ -58,8 +58,8 @@ public class ImageListener extends ListenerAdapter {
 
                 MessageAction responseMsg = channel.sendMessage("SMOH!!! (begins chopping)")
                         .addFile(new File("src/main/resources/graphics/small_chop.gif"));
-                responseMsg.queue(); // TODO: add message deletion?
-                channel.sendTyping().queue(); // TOOD: double check if this actually works?
+                responseMsg.queue();
+                channel.sendTyping().queue();
 
                 ModularCarver carver = null;
                 switch (userCommand) {
@@ -70,7 +70,6 @@ public class ImageListener extends ListenerAdapter {
                         return;
                     }
                 }
-                System.out.println("Constructed carver!");
 
                 double xCut = 0; // TODO: whats the convention on initializing empty variables?
                 double yCut = 0;

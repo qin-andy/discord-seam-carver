@@ -43,7 +43,7 @@ public class Carver {
             Image scaled = image.getScaledInstance(newW, newH, Image.SCALE_SMOOTH);
             BufferedImage scaledImage = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_ARGB);
             scaledImage.createGraphics().drawImage(scaled, 0, 0, null);
-            scaledImage.createGraphics().dispose(); //TODO: CHECK IF THIS IS ACTUALLY DISPOSED!
+            scaledImage.createGraphics().dispose();
             image = scaledImage;
             System.out.println("Image too large! Scaling down to " + newW + " by " + newH);
 
