@@ -1,7 +1,10 @@
-import energy.BackwardsEnergy;
+package carver;
+
 import energy.EnergyStrategy;
 import energy.ForwardsEnergy;
-import pathfinder.DefaultPathfinder;
+import manipulation.ImageHandler;
+import manipulation.PathRemover;
+import manipulation.RGBExtractor;
 import pathfinder.ForwardsPathfinder;
 import pathfinder.PathfinderStrategy;
 
@@ -36,13 +39,13 @@ public class ModularCarver {
         System.out.println("Construction and carving took " + (System.currentTimeMillis() - start) + "ms!");
     }
 
-    // Constructs a new ModularCarver for an image using an EnergyStrategy and associated PathfinderStrategy
+    // Constructs a new carver.ModularCarver for an image using an EnergyStrategy and associated PathfinderStrategy
     public ModularCarver(String imagePath, EnergyStrategy e, PathfinderStrategy p) {
         handler = new ImageHandler();
         try {
             image = handler.read(imagePath);
         } catch (IOException e1) {
-            System.out.println("Error reading file in ModularCarver!");
+            System.out.println("Error reading file in carver.ModularCarver!");
         }
         width = image.getWidth();
         height = image.getHeight();
@@ -65,7 +68,7 @@ public class ModularCarver {
     }
 
     // Uses the given energy strategy and pathfinder strategy to identify low energy seams
-    // and remove them from the ModularCarver's main image.
+    // and remove them from the carver.ModularCarver's main image.
     public void carve(int xCut, int yCut) {
         // Step 1: Convert the BufferedImage to TYPE_INT_ARGB
         if (image.getType() != 2) {
@@ -106,7 +109,7 @@ public class ModularCarver {
         // Step 5: Write image back to file
         try {
             handler.save(image, "carved");
-        } catch (IOException e) { System.out.println("Error writing file in ModularCarver!"); }
+        } catch (IOException e) { System.out.println("Error writing file in carver.ModularCarver!"); }
     }
 
     // The main loop for cutting vertical seams

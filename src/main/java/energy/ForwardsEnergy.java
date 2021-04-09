@@ -8,8 +8,9 @@ public class ForwardsEnergy implements EnergyStrategy{
         int[] energyArray = new int[3*width*height];
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++)  {
-                // Typed out for readability
-                // Energy mapping algorithm is Δx^2(x, y) + Δy^2(x, y)
+
+                // Forwards Energy of a single pixel is Δx^2(x, y) + Δy^2(x, y)
+                // + extra cost of the two pixels made adjacent by the direction travelled
                 int colorRight;
                 int colorLeft;
                 int colorDown;

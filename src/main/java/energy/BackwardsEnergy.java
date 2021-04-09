@@ -7,12 +7,12 @@ public class BackwardsEnergy implements EnergyStrategy {
         int[] energyArray = new int[width*height];
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                // Typed out for readability
-                // Energy mapping algorithm is Δx^2(x, y) + Δy^2(x, y)
+
+                // Backwards Energy of a single pixel is Δx^2(x, y) + Δy^2(x, y)
                 int prev;
                 int next;
 
-                // Edges are trated as adjacent to the opposite side
+                // Edges are treated as adjacent to the opposite side
                 if (x == 0) {
                     prev = ARGBValues[y*width + (width-1)];
                     next = ARGBValues[y*width + x+1];

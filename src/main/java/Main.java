@@ -1,3 +1,4 @@
+import listener.ImageListener;
 import net.dv8tion.jda.api.JDABuilder;
 
 import java.io.IOException;

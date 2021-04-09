@@ -1,3 +1,5 @@
+package manipulation;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -8,7 +10,7 @@ public class ImageHandler {
 
     // Reads an image to a BufferedImage object
     public BufferedImage read(String path) throws IOException {
-        BufferedImage image = ImageIO.read(new File(path)); // Exception handled in ModularCarver(?)
+        BufferedImage image = ImageIO.read(new File(path)); // Exception handled in carver.ModularCarver(?)
         return image;
     }
 
