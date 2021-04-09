@@ -1,6 +1,8 @@
 import energy.BackwardsEnergy;
 import energy.EnergyStrategy;
+import energy.ForwardsEnergy;
 import pathfinder.DefaultPathfinder;
+import pathfinder.ForwardsPathfinder;
 import pathfinder.PathfinderStrategy;
 
 import java.awt.image.BufferedImage;
@@ -29,8 +31,8 @@ public class ModularCarver {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
         String filePath = "src/main/resources/images/lapp.png"; //change this path to the desired image
-        ModularCarver carver = new ModularCarver(filePath, new BackwardsEnergy(), new DefaultPathfinder());
-        carver.carve(300, 300); // change these values to the desired values
+        ModularCarver carver = new ModularCarver(filePath, new ForwardsEnergy(), new ForwardsPathfinder());
+        carver.carve(200, 0); // change these values to the desired values
         System.out.println("Construction and carving took " + (System.currentTimeMillis() - start) + "ms!");
     }
 
@@ -101,7 +103,7 @@ public class ModularCarver {
         int totalTime = convertToRGBTime + energyMapTime + shortestPathTime + pathRemovalTime;
         System.out.println("TOTAL TIME:" + totalTime + " ms");
 
-        // Step 5: Write image back
+        // Step 5: Write image back to file
         try {
             handler.save(image, "carved");
         } catch (IOException e) { System.out.println("Error writing file in ModularCarver!"); }
@@ -145,7 +147,7 @@ public class ModularCarver {
             height = image.getHeight();
 
             // Print iteration time to track longer jobs
-            if (cutCount % 25 == 0) {
+            if (cutCount % 50 == 0) {
                 System.out.println("Iteration " + cutCount + " took " +
                         (System.currentTimeMillis() - iterationTime) + "ms!");
                 iterationTime = System.currentTimeMillis();

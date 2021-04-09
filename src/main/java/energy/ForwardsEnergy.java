@@ -26,20 +26,7 @@ public class ForwardsEnergy implements EnergyStrategy{
                     colorLeft = ARGBValues[y*width + x-1];
                     colorRight = ARGBValues[y*width + x+1];
                 }
-
-                int leftB = colorLeft & 0xff;
-                int leftG = (colorLeft & 0xff00) >> 8;
-                int leftR = (colorLeft & 0xff0000) >> 16;
-
-                int rightB = colorRight & 0xff;
-                int rightG = (colorRight & 0xff00) >> 8;
-                int rightR = (colorRight & 0xff0000) >> 16;
-
-                int deltaR = (int) Math.pow(leftR - rightR, 2);
-                int deltaG = (int) Math.pow(leftG - rightG, 2);
-                int deltaB = (int) Math.pow(leftB - rightB, 2);
-
-                int xDeltaSquare = deltaR + deltaG + deltaB;
+                int xDeltaSquare = colorDifference(colorLeft, colorRight);
 
                 if (y == 0) {
                     colorUp = ARGBValues[(height-1)*width + x];
@@ -52,20 +39,7 @@ public class ForwardsEnergy implements EnergyStrategy{
                     colorDown = ARGBValues[(y+1)*width + x];
                 }
 
-                int upB = colorUp & 0xff;
-                int upG = (colorUp & 0xff00) >> 8;
-                int upR = (colorUp & 0xff0000) >> 16;
-
-                int downB = colorDown & 0xff;
-                int downG = (colorDown & 0xff00) >> 8;
-                int downR = (colorDown & 0xff0000) >> 16;
-
-                deltaR = (int) Math.pow(upR - downR, 2);
-                deltaG = (int) Math.pow(upG - downG, 2);
-                deltaB = (int) Math.pow(upB - downB, 2);
-
-                int yDeltaSquare = deltaR + deltaG + deltaB;
-
+                int yDeltaSquare = colorDifference(colorUp, colorDown);
                 int baseEnergy = xDeltaSquare + yDeltaSquare;
 
                 energyArray[3*y*width + 3*x] = -1;

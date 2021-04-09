@@ -23,20 +23,7 @@ public class BackwardsEnergy implements EnergyStrategy {
                     prev = ARGBValues[y*width + x-1];
                     next = ARGBValues[y*width + x+1];
                 }
-
-                int pB = prev & 0xff;
-                int pG = (prev & 0xff00) >> 8;
-                int pR = (prev & 0xff0000) >> 16;
-
-                int nB = next & 0xff;
-                int nG = (next & 0xff00) >> 8;
-                int nR = (next & 0xff0000) >> 16;
-
-                int deltaR = (int) Math.pow(pR - nR, 2);
-                int deltaG = (int) Math.pow(pG - nG, 2);
-                int deltaB = (int) Math.pow(pB - nB, 2);
-
-                int xDeltaSquare = deltaR + deltaG + deltaB;
+                int xDeltaSquare = colorDifference(prev, next);
 
                 if (y == 0) {
                     prev = ARGBValues[(height-1)*width + x];
@@ -49,22 +36,25 @@ public class BackwardsEnergy implements EnergyStrategy {
                     next = ARGBValues[(y+1) * width + x];
                 }
 
-                pB = prev & 0xff;
-                pG = (prev & 0xff00) >> 8;
-                pR = (prev & 0xff0000) >> 16;
-
-                nB = next & 0xff;
-                nG = (next & 0xff00) >> 8;
-                nR = (next & 0xff0000) >> 16;
-
-                deltaR = (int) Math.pow(pR - nR, 2);
-                deltaG = (int) Math.pow(pG - nG, 2);
-                deltaB = (int) Math.pow(pB - nB, 2);
-
-                int yDeltaSquare = deltaR + deltaG + deltaB;
+                int yDeltaSquare = colorDifference(prev, next);
                 energyArray[y * width + x] = xDeltaSquare + yDeltaSquare;
             }
         }
         return energyArray;
+    }
+
+    private int colorDifference(int a, int b) {
+        int aB = a & 0xff;
+        int aG = (a & 0xff00) >> 8;
+        int aR = (a & 0xff0000) >> 16;
+
+        int bB = b & 0xff;
+        int bG = (b & 0xff00) >> 8;
+        int bR = (b & 0xff0000) >> 16;
+
+        int deltaR = (int) Math.pow(aR - bR, 2);
+        int deltaG = (int) Math.pow(aG - bG, 2);
+        int deltaB = (int) Math.pow(aB - bB, 2);
+        return deltaR + deltaG + deltaB;
     }
 }
