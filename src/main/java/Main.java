@@ -15,9 +15,19 @@ public class Main {
     public static void main(String[] args)
             throws LoginException, InterruptedException, IOException
     {
-        String token = "ODE3MjgwNjk2ODI4NTU5Mzgw.YEHN9g.xX6mfDGlUOIcnMCdDq0JIQD0_pc";
-        JDABuilder jda = JDABuilder.createDefault(token)
-                .addEventListeners(new ImageListener());
-        jda.build();
+        Scanner s = new Scanner(System.in);
+        System.out.println("Enter your bot's authorization token: ");
+        String token = "";
+        while (!token.equalsIgnoreCase("quit")) {
+            token = s.next();
+            try {
+                JDABuilder jda = JDABuilder.createDefault(token)
+                        .addEventListeners(new ImageListener());
+                jda.build();
+                token = "quit";
+            } catch (LoginException e) {
+                System.out.println("Invalid login token! Try again (or 'quit' to quit): ");
+            }
+        }
     }
 }

@@ -43,7 +43,7 @@ public class ImageListener extends ListenerAdapter {
                 }
 
                 String path = "src/main/resources/images/download.png";
-                attachment.downloadToFile(path).get(); // TODO: security concerns? Could this lead to code injection?
+                attachment.downloadToFile(path).get();
 
                 channel.sendMessage("SMOH!!! (begins chopping)")
                         .addFile(new File("src/main/resources/assets/small_chop.gif")).queue();
@@ -93,7 +93,7 @@ public class ImageListener extends ListenerAdapter {
                     sendSadSmoh(channel, "smoh.... (the cut numbers you gave dont make any sense..)");
                     return;
                 }
-                channel.sendMessage("SMOHOHO!!!") // TODO: add error handling and timing to ModularCarver
+                channel.sendMessage("SMOHOHO (image completed!!!)")
                         .addFile(new File("src/main/resources/images/carved.PNG")).queue();
             } catch (InterruptedException e) {
                 sendSadSmoh(channel, "smoh.... (something got interrupted!)");
