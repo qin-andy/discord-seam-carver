@@ -37,6 +37,7 @@ public class CommandListener extends ListenerAdapter {
         String[] args = content.split(" ");
         if (!isValidCommand(args[0])) {
             channel.sendMessage("Smoh... (I don't know how to do that! Type !info for valid commands!");
+            return;
         }
         System.out.println("Executing: " + message);
         commands.get(args[0]).execute(channel, author, message);
