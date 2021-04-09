@@ -142,3 +142,6 @@ hs_err_pid*
 
 # images
 src/main/resources/images/*
+
+# .idea
+.idea/*
