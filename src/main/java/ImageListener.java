@@ -2,6 +2,7 @@
 import energy.BackwardsEnergy;
 import energy.EnergyStrategy;
 import energy.ForwardsEnergy;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
@@ -13,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import pathfinder.DefaultPathfinder;
 import pathfinder.ForwardsPathfinder;
 
+import java.awt.*;
 import java.io.IOException;
 import java.io.File;
 import java.nio.channels.Channel;
@@ -32,8 +34,12 @@ public class ImageListener extends ListenerAdapter {
         String[] splitContent = content.split(" ");
         String userCommand = splitContent[0];
 
-        if (isValidCommand(userCommand) && !message.getAttachments().isEmpty()) {
+        if (content.equals("!help")) {
+            sendHelp(channel);
+            return;
+        }
 
+        if (isValidCommand(userCommand) && !message.getAttachments().isEmpty()) {
             // Retrieve file from message
             Message.Attachment attachment = message.getAttachments().get(0);
             try {
@@ -51,15 +57,15 @@ public class ImageListener extends ListenerAdapter {
 
                 ModularCarver carver = null;
                 switch (userCommand) {
-                    case "carve" -> carver = new ModularCarver(path, new BackwardsEnergy(), new DefaultPathfinder());
-                    case "fcarve" -> carver = new ModularCarver(path, new ForwardsEnergy(), new ForwardsPathfinder());
+                    case "!carve" -> carver = new ModularCarver(path, new BackwardsEnergy(), new DefaultPathfinder());
+                    case "!fcarve" -> carver = new ModularCarver(path, new ForwardsEnergy(), new ForwardsPathfinder());
                     default -> {
                         sendSadSmoh(channel, "smoh.... (i dont know how to do that... yet!)");
                         return;
                     }
                 }
 
-                double xCut = 0; // TODO: whats the convention on initializing empty variables?
+                double xCut = 0;
                 double yCut = 0;
                 switch (splitContent.length) {
                     case 1 -> xCut = 0.25;
@@ -89,7 +95,7 @@ public class ImageListener extends ListenerAdapter {
                 if (xCut >= 0 && yCut >= 0) {
                     System.out.println("Smoo.. beginning ratio cut!");
                     carver.carve(xCut, yCut);
-                } else { // Invalid cut specification!
+                } else {
                     sendSadSmoh(channel, "smoh.... (the cut numbers you gave dont make any sense..)");
                     return;
                 }
@@ -105,12 +111,31 @@ public class ImageListener extends ListenerAdapter {
         }
     }
 
+    // Checks for valid commands (excluding help)
     private boolean isValidCommand(String command) {
-        return command.equals("carve") || command.equals(("fcarve")); //TODO: replace with Set contains call?
+        return command.equals("!carve") || command.equals(("!fcarve"));
     }
 
+    // Sends an apology image for errors
     private void sendSadSmoh(MessageChannel channel, String msg) {
         channel.sendMessage(msg)
                 .addFile(new File("src/main/resources/assets/smoh_apology.jpg")).queue();
+    }
+
+    // Sends information about the how to use the bot!
+    private void sendHelp(MessageChannel channel) {
+        EmbedBuilder eb = new EmbedBuilder();
+        eb.setTitle("Smohbot Info", "https://github.com/qin-andy/Smohbot");
+        eb.setColor(Color.red);
+        eb.addField("Title", "Smohbot Info", false);
+
+        String desc =
+        "SMOHHH!!! (Hi!!!! My name is Smohbot!)\n"
+        + "Use !carve with an image attachment to apply content aware image scaling!\n"
+        + "Adjust the cut size by added x and y ratios, i.e. 'carve 0.3 0.3'!\n"
+        + "(Experimental) Try !fcarve to reduce artifacts! (Might take longer)\n";
+        eb.addField("Info", desc, true);
+
+        channel.sendMessage(eb.build()).addFile(new File("src/main/resources/assets/smoh_help.jpg")).queue();
     }
 }
