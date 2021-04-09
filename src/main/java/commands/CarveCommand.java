@@ -12,38 +12,40 @@ import pathfinder.ForwardsPathfinder;
 import java.io.File;
 import java.util.concurrent.ExecutionException;
 
-public class CarveCommand {
+public class CarveCommand extends Command {
+    private ModularCarver[] carvers;
+
+    // TODO: change modularcarver to accept path as a method rather than a constructor
+    public CarveCommand() {
+        carvers = new ModularCarver[2];
+        //carvers[0] = new
+    }
+
     public void execute(MessageChannel channel, User author, Message message) {
+        if (message.getAttachments().isEmpty()) {
+            sendSadSmoh(channel, "smoh.... (please send the image as an attachment!)");
+            return;
+        }
 
         String content = message.getContentRaw();
-
-        String[] splitContent = content.split(" ");
-        String userCommand = splitContent[0];
-
-        if (!isValidCommand(userCommand)) {
-            sendSadSmoh(channel, "Invalid command!");
-        }
-        if (message.getAttachments().isEmpty()) {
-
-        }
+        String[] args = content.split(" ");
         Message.Attachment attachment = message.getAttachments().get(0);
-        // Retrieve file from message
+
+        if (!attachment.isImage()) {
+            sendSadSmoh(channel, "smoh.... (I don't recognize this file format..)");
+            return;
+        }
 
         try {
-            if (!attachment.isImage()) {
-                sendSadSmoh(channel, "smoh.... (I don't recognize this file format..)");
-                return;
-            }
-
-            String path = "src/main/resources/images/download.png";
+            String path = "src/main/resources/images/download.png"; //TODO: Refactor string paths using globs
             attachment.downloadToFile(path).get();
 
-            channel.sendMessage("SMOH!!! (begins chopping)")
+            channel.sendMessage("SMOH!!! (begins chopping)") //TODO: use embed builders
                     .addFile(new File("src/main/resources/assets/small_chop.gif")).queue();
             channel.sendTyping().queue();
 
             ModularCarver carver = null;
-            switch (userCommand) {
+            switch (args[0]) {
                 case "!carve" -> carver = new ModularCarver(path, new BackwardsEnergy(), new DefaultPathfinder());
                 case "!fcarve" -> carver = new ModularCarver(path, new ForwardsEnergy(), new ForwardsPathfinder());
                 default -> {
@@ -54,12 +56,12 @@ public class CarveCommand {
 
             double xCut = 0;
             double yCut = 0;
-            switch (splitContent.length) {
+            switch (args.length) {
                 case 1 -> xCut = 0.25;
-                case 2 -> xCut = Double.parseDouble(splitContent[1]);
+                case 2 -> xCut = Double.parseDouble(args[1]);
                 case 3 -> {
-                    xCut = Double.parseDouble(splitContent[1]);
-                    yCut = Double.parseDouble(splitContent[2]);
+                    xCut = Double.parseDouble(args[1]);
+                    yCut = Double.parseDouble(args[2]);
                 }
                 default -> {
                     sendSadSmoh(channel, "smoh.. (too many arguments!)");

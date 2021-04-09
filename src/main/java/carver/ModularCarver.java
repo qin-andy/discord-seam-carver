@@ -87,6 +87,8 @@ public class ModularCarver {
             height = image.getHeight();
         }
 
+        System.out.println("Cutting " + xCut + ", " + yCut);
+
         // Step 3: Enter carving loop for vertical cuts
         image = cutVerticalSeams(xCut);
 
