@@ -22,11 +22,6 @@ import java.util.concurrent.ExecutionException;
 public class ImageListener extends ListenerAdapter {
     private Boolean isWorking; // TODO: look into flag design patterns? action blocking?
 
-    public ImageListener() {
-        super();
-        isWorking = false;
-    }
-
     public void onMessageReceived(MessageReceivedEvent event) {
         if (event.getAuthor().isBot()) return;
 
@@ -38,14 +33,8 @@ public class ImageListener extends ListenerAdapter {
         String userCommand = splitContent[0];
 
         if (isValidCommand(userCommand) && !message.getAttachments().isEmpty()) {
-            if (isWorking) {
-                sendSadSmoh(channel, "smoh.. (i'm busy handling someone elses image... try again later!");
-                isWorking = true;
-                return;
-            }
 
-            isWorking = true;
-
+            // Retrieve file from message
             Message.Attachment attachment = message.getAttachments().get(0);
             try {
                 if (!attachment.isImage()) {
@@ -57,7 +46,7 @@ public class ImageListener extends ListenerAdapter {
                 attachment.downloadToFile(path).get(); // TODO: security concerns? Could this lead to code injection?
 
                 channel.sendMessage("SMOH!!! (begins chopping)")
-                        .addFile(new File("src/main/resources/graphics/small_chop.gif")).queue();
+                        .addFile(new File("src/main/resources/assets/small_chop.gif")).queue();
                 channel.sendTyping().queue();
 
                 ModularCarver carver = null;
@@ -90,15 +79,14 @@ public class ImageListener extends ListenerAdapter {
                     return;
                 }
 
-                if (xCut > 1) {
+                if (xCut > 1) { // Edgecase: how does this handle cutsizes of 1?
                     xCut /= attachment.getWidth();
                 }
                 if (yCut > 1) {
                     yCut /= attachment.getHeight();
                 }
 
-
-                if (xCut >= 0 && yCut >= 0 && xCut < 1 && yCut < 1) {
+                if (xCut >= 0 && yCut >= 0) {
                     System.out.println("Smoo.. beginning ratio cut!");
                     carver.carve(xCut, yCut);
                 } else { // Invalid cut specification!
@@ -107,7 +95,6 @@ public class ImageListener extends ListenerAdapter {
                 }
                 channel.sendMessage("SMOHOHO!!!") // TODO: add error handling and timing to ModularCarver
                         .addFile(new File("src/main/resources/images/carved.PNG")).queue();
-                isWorking = false; // RESETTING WORKING TAG
             } catch (InterruptedException e) {
                 sendSadSmoh(channel, "smoh.... (something got interrupted!)");
             } catch (ExecutionException e) {
@@ -125,7 +112,6 @@ public class ImageListener extends ListenerAdapter {
 
     private void sendSadSmoh(MessageChannel channel, String msg) {
         channel.sendMessage(msg)
-                .addFile(new File("src/main/resources/graphics/smoh_apology.jpg")).queue();
-        isWorking = false;
+                .addFile(new File("src/main/resources/assets/smoh_apology.jpg")).queue();
     }
 }
