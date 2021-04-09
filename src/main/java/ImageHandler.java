@@ -68,7 +68,7 @@ public class ImageHandler {
         try {
             ImageIO.write(image, "PNG", outputFile);
         } catch (IOException e) {
-
+            System.out.println("There was an error saving the file!");
         }
     }
 }

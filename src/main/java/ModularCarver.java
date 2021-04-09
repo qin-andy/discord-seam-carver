@@ -41,7 +41,7 @@ public class ModularCarver {
         try {
             image = handler.read(imagePath);
         } catch (IOException e1) {
-            System.out.println("Error reading file!");
+            System.out.println("Error reading file in ModularCarver!");
         }
         width = image.getWidth();
         height = image.getHeight();
@@ -56,6 +56,8 @@ public class ModularCarver {
         carve((int) (xRatio * width), (int) (yRatio * height));
     }
 
+    // Uses the given energy strategy and pathfinder strategy to identify low energy seams
+    // and remove them from the ModularCarver's main image.
     public void carve(int xCut, int yCut) {
         // Step 1: Convert the BufferedImage to TYPE_INT_ARGB
         if (image.getType() != 2) { // TOOD: double check if 2 corresponds to TYPE_INT_ARGB
@@ -68,7 +70,7 @@ public class ModularCarver {
             long start = System.currentTimeMillis();
             double scale = (double) maxSize / Math.max(height, width);
             image = handler.scale(image, scale);
-            xCut *= scale; // TODO: check if this scales the cut size correctly
+            xCut *= scale;
             yCut *= scale;
 
             width = image.getWidth();
@@ -94,17 +96,19 @@ public class ModularCarver {
         int totalTime = convertToRGBTime + energyMapTime + shortestPathTime + pathRemovalTime;
         System.out.println("TOTAL TIME:" + totalTime + " ms");
 
-        // Step 5: Write image back to disc
+        // Step 5: Write image back
         try {
             handler.save(image, "carved");
         } catch (IOException e) { }
     }
 
+    // The main loop for cutting vertical seams
     private BufferedImage cutVerticalSeams(int numCuts) {
         int width = image.getWidth();
         int height = image.getHeight();
         extractor.setInitialWidth(width);
         pathRemover.setInitialWidth(width);
+        long iterationTime = System.currentTimeMillis();
         for (int cutCount = 0; cutCount < numCuts; cutCount++) {
             // Step 3a: Extract RGB values from image
             long startTime = System.currentTimeMillis();
@@ -133,6 +137,13 @@ public class ModularCarver {
             // Update width and height
             width = image.getWidth();
             height = image.getHeight();
+
+            // Print iteration time to track longer jobs
+            if (cutCount % 25 == 0) {
+                System.out.println("Iteration " + cutCount + " took " +
+                        (iterationTime - System.currentTimeMillis()) + "ms!");
+                iterationTime = System.currentTimeMillis();
+            }
         }
         return image;
     }

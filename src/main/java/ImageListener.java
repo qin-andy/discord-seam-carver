@@ -109,7 +109,6 @@ public class ImageListener extends ListenerAdapter {
         return command.equals("carve") || command.equals(("fcarve")); //TODO: replace with Set contains call?
     }
 
-
     private void sendSadSmoh(MessageChannel channel, String msg) {
         channel.sendMessage(msg)
                 .addFile(new File("src/main/resources/assets/smoh_apology.jpg")).queue();
