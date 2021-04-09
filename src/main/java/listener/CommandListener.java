@@ -15,7 +15,7 @@ import java.awt.*;
 import java.io.File;
 import java.util.concurrent.ExecutionException;
 
-public class ImageListener extends ListenerAdapter {
+public class CommandListener extends ListenerAdapter {
     public void onMessageReceived(MessageReceivedEvent event) {
         if (event.getAuthor().isBot()) return;
 

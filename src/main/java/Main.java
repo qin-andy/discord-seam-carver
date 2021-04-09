@@ -1,4 +1,4 @@
-import listener.ImageListener;
+import listener.CommandListener;
 import net.dv8tion.jda.api.JDABuilder;
 
 import java.io.IOException;
@@ -18,7 +18,7 @@ public class Main {
             token = s.next();
             try {
                 JDABuilder jda = JDABuilder.createDefault(token)
-                        .addEventListeners(new ImageListener());
+                        .addEventListeners(new CommandListener());
                 jda.build();
                 token = "quit";
             } catch (LoginException e) {
