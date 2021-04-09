@@ -1,9 +1,11 @@
 # Smohbot
-A friendly discord bot for content aware image scaling!
+A "Seam Carving" content aware image scaling application built from scratch packaged in a fun and accessible discord bot!
+As opposed to scaling or cropping, seam carving identifies and removes the "least important" seams of an image to smartly reduce image size.
 
-Written as a learning experience in algorithm implementation, design pattern decisions, and start-to-finish product development.
-### Features
-- Image manipulation packaged in an interactive discord bot
-- Send images as message attachments and receive editted versions from the bot
-- Supports vertical and horizontal content aware image scaling using seam carving
-- Specify size of scaling and carving algorithm through text commands
+### User Features
+- Implements two interchangeable seam carving strategies, "Backwards energy" and "Forwards energy" mapping
+- Accepts images as discord message attachments and sends content aware scaled versions
+- Specify either flat or percentage scaling as well as carving strategy through text commands
+- Supports seam carving along both vertical and horizontal axes
+
+Written as an applciation algorithm implementation and design skills.
