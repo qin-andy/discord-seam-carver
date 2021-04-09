@@ -22,6 +22,7 @@ public class RGBExtractor {
         return ARGBValues;
     }
 
+    // Reset the initial width value
     public void setInitialWidth(int newWidth) {
         initialWidth = newWidth;
     }

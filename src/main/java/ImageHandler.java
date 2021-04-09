@@ -8,12 +8,7 @@ public class ImageHandler {
 
     // Reads an image to a BufferedImage object
     public BufferedImage read(String path) throws IOException {
-        BufferedImage image = null;
-        try {
-            image = ImageIO.read(new File(path));
-        } catch (IOException e) {
-
-        }
+        BufferedImage image = ImageIO.read(new File(path)); // Exception handled in ModularCarver(?)
         return image;
     }
 
@@ -29,7 +24,7 @@ public class ImageHandler {
         BufferedImage scaledImage = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = scaledImage.createGraphics();
         g.drawImage(scaled, 0, 0, null);
-        g.dispose(); //TODO: CHECK IF THIS IS ACTUALLY DISPOSED!
+        g.dispose();
 
         System.out.println("Image too large! Scaling down to " + newW + " by " + newH);
         long end = System.currentTimeMillis();
@@ -57,8 +52,6 @@ public class ImageHandler {
                 transpose.setRGB(y, x, image.getRGB(x, y));
             }
         }
-        long end = System.currentTimeMillis();
-        System.out.println("Tranposing took  " + (end - start) + "ms!");
         return transpose;
     }
 

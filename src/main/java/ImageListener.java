@@ -1,29 +1,18 @@
-
 import energy.BackwardsEnergy;
-import energy.EnergyStrategy;
 import energy.ForwardsEnergy;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
-import org.jetbrains.annotations.NotNull;
 import pathfinder.DefaultPathfinder;
 import pathfinder.ForwardsPathfinder;
 
 import java.awt.*;
-import java.io.IOException;
 import java.io.File;
-import java.nio.channels.Channel;
-import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 public class ImageListener extends ListenerAdapter {
-    private Boolean isWorking; // TODO: look into flag design patterns? action blocking?
-
     public void onMessageReceived(MessageReceivedEvent event) {
         if (event.getAuthor().isBot()) return;
 
@@ -44,7 +33,7 @@ public class ImageListener extends ListenerAdapter {
             Message.Attachment attachment = message.getAttachments().get(0);
             try {
                 if (!attachment.isImage()) {
-                    sendSadSmoh(channel, "smoh.... (i dont recognize this file format..)");
+                    sendSadSmoh(channel, "smoh.... (I don't recognize this file format..)");
                     return;
                 }
 
@@ -60,7 +49,7 @@ public class ImageListener extends ListenerAdapter {
                     case "!carve" -> carver = new ModularCarver(path, new BackwardsEnergy(), new DefaultPathfinder());
                     case "!fcarve" -> carver = new ModularCarver(path, new ForwardsEnergy(), new ForwardsPathfinder());
                     default -> {
-                        sendSadSmoh(channel, "smoh.... (i dont know how to do that... yet!)");
+                        sendSadSmoh(channel, "smoh.... (I don't recognize that command.. try !help)");
                         return;
                     }
                 }
@@ -75,17 +64,17 @@ public class ImageListener extends ListenerAdapter {
                         yCut = Double.parseDouble(splitContent[2]);
                     }
                     default -> {
-                        sendSadSmoh(channel, "smoh.... (too many arguments!)");
+                        sendSadSmoh(channel, "smoh.. (too many arguments!)");
                         return;
                     }
                 }
 
                 if (xCut >= attachment.getWidth() || yCut >= attachment.getHeight()) {
-                    sendSadSmoh(channel, "smoh.... (the cut size is too big!)");
+                    sendSadSmoh(channel, "smoh.. (cut size cannot be larger than the image!)");
                     return;
                 }
 
-                if (xCut > 1) { // Edgecase: how does this handle cutsizes of 1?
+                if (xCut > 1) { // How does this handle cut sizes of 1? Chop off 1 pixel?
                     xCut /= attachment.getWidth();
                 }
                 if (yCut > 1) {

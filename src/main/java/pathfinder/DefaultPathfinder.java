@@ -41,7 +41,8 @@ public class DefaultPathfinder implements PathfinderStrategy {
         int minEnergy = distTo[(height-1)*width];
         int minX = 0;
 
-        for (int x = 1; x < width; x++) { // Find the lowest energy path by looking at the bottom row of nodes
+        // Find the lowest energy path by looking at the bottom row of nodes
+        for (int x = 1; x < width; x++) {
             if (distTo[(height-1)*width+x] < minEnergy) {
                 minX = x;
                 minEnergy = distTo[(height-1)*width+x];
@@ -51,8 +52,9 @@ public class DefaultPathfinder implements PathfinderStrategy {
         minPath[height-1] = minX;
         int childX = minX;
 
+        // use the parent array to traverse backwards to find shortest path
         int parentX;
-        for (int y = height - 1; y > 0; y--) { // use the parent array to traverse backwards to find shortest path
+        for (int y = height - 1; y > 0; y--) {
             parentX = parent[y*width+childX];
             minPath[y-1] = parentX;
             childX = parentX;

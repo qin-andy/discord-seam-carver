@@ -1,17 +1,15 @@
 import energy.BackwardsEnergy;
 import energy.EnergyStrategy;
-import energy.ForwardsEnergy;
 import pathfinder.DefaultPathfinder;
-import pathfinder.ForwardsPathfinder;
 import pathfinder.PathfinderStrategy;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.util.Arrays;
 
 public class ModularCarver {
+
+    private static final int MAX_SIZE = 1000; // The maximum x or y length before the bot compresses the image
+
     private ImageHandler handler;
     private RGBExtractor extractor;
     private EnergyStrategy energyMapper;
@@ -22,21 +20,22 @@ public class ModularCarver {
     private int width;
     private int height;
 
-    int convertToRGBTime = 0;
-    int energyMapTime = 0;
-    int shortestPathTime = 0;
-    int pathRemovalTime = 0;
+    private int convertToRGBTime;
+    private int energyMapTime;
+    private int shortestPathTime;
+    private int pathRemovalTime;
 
+    // For directly testing the Seam Carving
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-        String filePath = "src/main/resources/images/lapp.png";
+        String filePath = "src/main/resources/images/lapp.png"; //change this path to the desired image
         ModularCarver carver = new ModularCarver(filePath, new BackwardsEnergy(), new DefaultPathfinder());
-        carver.carve(300, 300);
+        carver.carve(300, 300); // change these values to the desired values
         System.out.println("Construction and carving took " + (System.currentTimeMillis() - start) + "ms!");
     }
 
+    // Constructs a new ModularCarver for an image using an EnergyStrategy and associated PathfinderStrategy
     public ModularCarver(String imagePath, EnergyStrategy e, PathfinderStrategy p) {
-        // Think about: should there be one carver for each image? or one carver to handle all images?
         handler = new ImageHandler();
         try {
             image = handler.read(imagePath);
@@ -50,8 +49,15 @@ public class ModularCarver {
         energyMapper = e;
         pathfinder = p;
         pathRemover = new PathRemover(width);
+
+        // Initialize timing
+        convertToRGBTime = 0;
+        energyMapTime = 0;
+        shortestPathTime = 0;
+        pathRemovalTime = 0;
     }
 
+    // Handle ratio cuts as proportioned flat cuts
     public void carve(double xRatio, double yRatio) {
         carve((int) (xRatio * width), (int) (yRatio * height));
     }
@@ -60,15 +66,14 @@ public class ModularCarver {
     // and remove them from the ModularCarver's main image.
     public void carve(int xCut, int yCut) {
         // Step 1: Convert the BufferedImage to TYPE_INT_ARGB
-        if (image.getType() != 2) { // TOOD: double check if 2 corresponds to TYPE_INT_ARGB
+        if (image.getType() != 2) {
             image = handler.convertToIntARGB(image);
         }
 
-        // Step 2: Scale imgae if it is too big
-        int maxSize = 1000;
-        if (height > maxSize || width > maxSize) {
+        // Step 2: Scale image if it is too big
+        if (height > MAX_SIZE || width > MAX_SIZE) {
             long start = System.currentTimeMillis();
-            double scale = (double) maxSize / Math.max(height, width);
+            double scale = (double) MAX_SIZE / Math.max(height, width);
             image = handler.scale(image, scale);
             xCut *= scale;
             yCut *= scale;
@@ -80,7 +85,7 @@ public class ModularCarver {
         // Step 3: Enter carving loop for vertical cuts
         image = cutVerticalSeams(xCut);
 
-        // Step 4: Tranpose for horizontal cuts
+        // Step 4: Transpose for horizontal cuts
         if (yCut > 0) {
             image = handler.transpose(image);
             image = cutVerticalSeams(yCut);
@@ -99,7 +104,7 @@ public class ModularCarver {
         // Step 5: Write image back
         try {
             handler.save(image, "carved");
-        } catch (IOException e) { }
+        } catch (IOException e) { System.out.println("Error writing file in ModularCarver!"); }
     }
 
     // The main loop for cutting vertical seams
@@ -110,6 +115,7 @@ public class ModularCarver {
         pathRemover.setInitialWidth(width);
         long iterationTime = System.currentTimeMillis();
         for (int cutCount = 0; cutCount < numCuts; cutCount++) {
+
             // Step 3a: Extract RGB values from image
             long startTime = System.currentTimeMillis();
             int[] RGBVals = extractor.extractARGB(image);
@@ -141,7 +147,7 @@ public class ModularCarver {
             // Print iteration time to track longer jobs
             if (cutCount % 25 == 0) {
                 System.out.println("Iteration " + cutCount + " took " +
-                        (iterationTime - System.currentTimeMillis()) + "ms!");
+                        (System.currentTimeMillis() - iterationTime) + "ms!");
                 iterationTime = System.currentTimeMillis();
             }
         }

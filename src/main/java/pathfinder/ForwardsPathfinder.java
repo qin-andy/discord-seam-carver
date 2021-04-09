@@ -2,6 +2,7 @@ package pathfinder;
 
 import java.util.Arrays;
 
+// The pathfinder for ForwardsEnergy mapping, whose energy map is a different format
 public class ForwardsPathfinder implements PathfinderStrategy {
     public int[] shortestPath(int energy[], int width, int height) {
         // Each [x][y] pair is modelled as a node
@@ -50,8 +51,9 @@ public class ForwardsPathfinder implements PathfinderStrategy {
         minPath[height-1] = minX;
         int childX = minX;
 
+        // use the parent array to traverse backwards to find shortest path
         int parentX;
-        for (int y = height - 1; y > 0; y--) { // use the parent array to traverse backwards to find shortest path
+        for (int y = height - 1; y > 0; y--) {
             parentX = parent[y*width+childX];
             minPath[y-1] = parentX;
             childX = parentX;
