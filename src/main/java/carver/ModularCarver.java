@@ -1,10 +1,12 @@
 package carver;
 
+import energy.BackwardsEnergy;
 import energy.EnergyStrategy;
 import energy.ForwardsEnergy;
 import manipulation.ImageHandler;
 import manipulation.PathRemover;
 import manipulation.RGBExtractor;
+import pathfinder.DefaultPathfinder;
 import pathfinder.ForwardsPathfinder;
 import pathfinder.PathfinderStrategy;
 
@@ -34,26 +36,19 @@ public class ModularCarver {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
         String filePath = "src/main/resources/images/lapp.png"; //change this path to the desired image
-        ModularCarver carver = new ModularCarver(filePath, new ForwardsEnergy(), new ForwardsPathfinder());
-        carver.carve(200, 0); // change these values to the desired values
+        ModularCarver carver = new ModularCarver(new BackwardsEnergy(), new DefaultPathfinder());
+        carver.carve(filePath, 300, 100); // change these values to the desired values
         System.out.println("Construction and carving took " + (System.currentTimeMillis() - start) + "ms!");
     }
 
     // Constructs a new carver.ModularCarver for an image using an EnergyStrategy and associated PathfinderStrategy
-    public ModularCarver(String imagePath, EnergyStrategy e, PathfinderStrategy p) {
+    public ModularCarver(EnergyStrategy e, PathfinderStrategy p) {
         handler = new ImageHandler();
-        try {
-            image = handler.read(imagePath);
-        } catch (IOException e1) {
-            System.out.println("Error reading file in carver.ModularCarver!");
-        }
-        width = image.getWidth();
-        height = image.getHeight();
 
-        extractor = new RGBExtractor(width);
+        extractor = new RGBExtractor();
         energyMapper = e;
         pathfinder = p;
-        pathRemover = new PathRemover(width);
+        pathRemover = new PathRemover();
 
         // Initialize timing
         convertToRGBTime = 0;
@@ -63,9 +58,25 @@ public class ModularCarver {
     }
 
     // Handle ratio cuts as proportioned flat cuts
-    public void carve(double xRatio, double yRatio) {
-        carve((int) (xRatio * width), (int) (yRatio * height));
+    public void carve(String imagePath, double xRatio, double yRatio) {
+        carve(imagePath, (int) (xRatio * width), (int) (yRatio * height));
     }
+
+    public void carve(String imagePath, int xFlatCut, int yFlatCut) {
+        acceptImage(imagePath);
+        carve(xFlatCut, yFlatCut);
+    }
+
+    private void acceptImage(String imagePath) {
+        try {
+            image = handler.read(imagePath);
+        } catch (IOException e1) {
+            System.out.println("Error reading file in carver.ModularCarver!");
+        }
+        width = image.getWidth();
+        height = image.getHeight();
+    }
+
 
     // Uses the given energy strategy and pathfinder strategy to identify low energy seams
     // and remove them from the carver.ModularCarver's main image.
@@ -95,6 +106,9 @@ public class ModularCarver {
         // Step 4: Transpose for horizontal cuts
         if (yCut > 0) {
             image = handler.transpose(image);
+            width = image.getWidth();
+            height = image.getHeight();
+
             image = cutVerticalSeams(yCut);
             image = handler.transpose(image);
         }
@@ -116,13 +130,10 @@ public class ModularCarver {
 
     // The main loop for cutting vertical seams
     private BufferedImage cutVerticalSeams(int numCuts) {
-        int width = image.getWidth();
-        int height = image.getHeight();
         extractor.setInitialWidth(width);
         pathRemover.setInitialWidth(width);
         long iterationTime = System.currentTimeMillis();
         for (int cutCount = 0; cutCount < numCuts; cutCount++) {
-
             // Step 3a: Extract RGB values from image
             long startTime = System.currentTimeMillis();
             int[] RGBVals = extractor.extractARGB(image);

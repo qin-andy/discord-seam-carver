@@ -18,7 +18,9 @@ public class CarveCommand extends Command {
     // TODO: change modularcarver to accept path as a method rather than a constructor
     public CarveCommand() {
         carvers = new ModularCarver[2];
-        //carvers[0] = new
+        carvers[0] = new ModularCarver(new BackwardsEnergy(), new DefaultPathfinder());
+        carvers[1] = new ModularCarver(new ForwardsEnergy(), new ForwardsPathfinder());
+
     }
 
     public void execute(MessageChannel channel, User author, Message message) {
@@ -46,8 +48,8 @@ public class CarveCommand extends Command {
 
             ModularCarver carver = null;
             switch (args[0]) {
-                case "!carve" -> carver = new ModularCarver(path, new BackwardsEnergy(), new DefaultPathfinder());
-                case "!fcarve" -> carver = new ModularCarver(path, new ForwardsEnergy(), new ForwardsPathfinder());
+                case "!carve" -> carver = carvers[0]; // See constructor
+                case "!fcarve" -> carver = carvers[1];
                 default -> {
                     sendSadSmoh(channel, "smoh.... (I don't recognize that command.. try !help)");
                     return;
@@ -83,7 +85,7 @@ public class CarveCommand extends Command {
 
             if (xCut >= 0 && yCut >= 0) {
                 System.out.println("Smoo.. beginning ratio cut!");
-                carver.carve(xCut, yCut);
+                carver.carve(path, xCut, yCut);
             } else {
                 sendSadSmoh(channel, "smoh.... (the cut numbers you gave dont make any sense..)");
                 return;

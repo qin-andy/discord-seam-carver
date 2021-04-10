@@ -6,10 +6,6 @@ import java.awt.image.DataBufferInt;
 public class PathRemover {
     private int initialWidth;
 
-    public PathRemover(int iWidth) {
-        initialWidth = iWidth;
-    }
-
     // Takes a BufferedImage and a vertical seam defined in a 1d array of X values
     // Returns a new BufferedImage with the vertical seam removed
     public BufferedImage removePath(BufferedImage image, int[] path) {
