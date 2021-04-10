@@ -15,8 +15,7 @@ public class RGBExtractor {
         int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++)  {
-                ARGBValues[y*width + x] = 0;
-                pixels[y*initialWidth + x] = 0; // (x,y) coordinate is found at index (y*width + x)
+                ARGBValues[y*width + x] = pixels[y*initialWidth + x]; // (x,y) coordinate is found at index (y*width + x)
             }
         }
         return ARGBValues;

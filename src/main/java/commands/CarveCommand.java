@@ -3,19 +3,20 @@ package commands;
 import carver.ModularCarver;
 import energy.BackwardsEnergy;
 import energy.ForwardsEnergy;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
 import pathfinder.DefaultPathfinder;
 import pathfinder.ForwardsPathfinder;
 
+import java.awt.*;
 import java.io.File;
 import java.util.concurrent.ExecutionException;
 
 public class CarveCommand extends Command {
     private ModularCarver[] carvers;
 
-    // TODO: change modularcarver to accept path as a method rather than a constructor
     public CarveCommand() {
         carvers = new ModularCarver[2];
         carvers[0] = new ModularCarver(new BackwardsEnergy(), new DefaultPathfinder());
@@ -42,9 +43,8 @@ public class CarveCommand extends Command {
             String path = "src/main/resources/images/download.png"; //TODO: Refactor string paths using globs
             attachment.downloadToFile(path).get();
 
-            channel.sendMessage("SMOH!!! (begins chopping)") //TODO: use embed builders
+            channel.sendMessage("SMOH! (begins chopping)")
                     .addFile(new File("src/main/resources/assets/small_chop.gif")).queue();
-            channel.sendTyping().queue();
 
             ModularCarver carver = null;
             switch (args[0]) {
@@ -85,13 +85,16 @@ public class CarveCommand extends Command {
 
             if (xCut >= 0 && yCut >= 0) {
                 System.out.println("Smoo.. beginning ratio cut!");
+                channel.sendTyping().queue();
                 carver.carve(path, xCut, yCut);
             } else {
                 sendSadSmoh(channel, "smoh.... (the cut numbers you gave dont make any sense..)");
                 return;
             }
-            channel.sendMessage("SMOHOHO (image completed!!!)")
+
+            channel.sendMessage("SMOHOHO! (DONE!)")
                     .addFile(new File("src/main/resources/images/carved.PNG")).queue();
+
         } catch (InterruptedException e) {
             sendSadSmoh(channel, "smoh.... (something got interrupted!)");
         } catch (ExecutionException e) {

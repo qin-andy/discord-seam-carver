@@ -32,7 +32,7 @@ public class CommandListener extends ListenerAdapter {
         String content = message.getContentRaw();
         MessageChannel channel = event.getChannel();
 
-        if (content.charAt(0) != '!') return; // TODO: add custom prefix setting
+        if (content.isEmpty() || content.charAt(0) != '!') return;
 
         String[] args = content.split(" ");
         if (!isValidCommand(args[0])) {
