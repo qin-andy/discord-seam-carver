@@ -1,4 +1,5 @@
 plugins {
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
     id 'java'
 }
 
@@ -12,4 +13,16 @@ repositories {
 
 dependencies {
     implementation 'net.dv8tion:JDA:4.2.0_241'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'Main'
+    }
+}
+
+shadowJar {
+    archiveBaseName.set('smohbot-shadow')
+    archiveClassifier.set('')
+    archiveFileName.set('smohbot-shadow.jar')
 }
