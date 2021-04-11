@@ -20,22 +20,22 @@ image first when reducing image size.
 ## Examples
 
 <div>
-  <img src="https://github.com/qin-andy/Smohbot/blob/assets/src/main/resources/assets/carve_demo_user.jpg" height="350">
-  <img src="https://github.com/qin-andy/Smohbot/blob/assets/src/main/resources/assets/carve_demo_smohbot.JPG" height="350">
+  <img src="https://github.com/qin-andy/Smohbot/blob/assets/src/main/resources/assets/carve_demo_user.jpg" height="250">
+  <img src="https://github.com/qin-andy/Smohbot/blob/assets/src/main/resources/assets/carve_demo_smohbot.JPG" height="250">
 </div>
 
  - The Great Wave off Kanagawa, Hokusai
 
 <br>
 <div>
-  <img src="https://github.com/qin-andy/Smohbot/blob/assets/src/main/resources/assets/seattle_demo1.png" height="300">
-  <img src="https://github.com/qin-andy/Smohbot/blob/assets/src/main/resources/assets/seattle_demo2.PNG" height="300">
+  <img src="https://github.com/qin-andy/Smohbot/blob/assets/src/main/resources/assets/seattle_demo1.png" height="220">
+  <img src="https://github.com/qin-andy/Smohbot/blob/assets/src/main/resources/assets/seattle_demo2.PNG" height="220">
 </div>
 
 <br>
 <div>
-  <img src="https://github.com/qin-andy/Smohbot/blob/assets/src/main/resources/assets/goose_demo1.png" height="300">
-  <img src="https://github.com/qin-andy/Smohbot/blob/assets/src/main/resources/assets/goose_demo2.png" height="300">
+  <img src="https://github.com/qin-andy/Smohbot/blob/assets/src/main/resources/assets/goose_demo1.png" height="220">
+  <img src="https://github.com/qin-andy/Smohbot/blob/assets/src/main/resources/assets/goose_demo2.png" height="220">
 </div>
 
  - Space Needle and Geese images are my own
