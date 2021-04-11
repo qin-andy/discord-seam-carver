@@ -1,4 +1,4 @@
-# Smohbot: a content aware image scaling Discord bot client
+# Smohbot: a content aware image scaling Discord bot
 Smohbot is a content aware image manipulation (seam carving) application written in Java, packaged
 into a Discord bot using [JDA](https://github.com/DV8FromTheWorld/JDA)! 
 
@@ -6,25 +6,35 @@ As opposed to scaling or cropping, seam carving identifies and removes the "leas
 image first when reducing image size.
 
 ### Features
-- Accepts image as discord message attachments, performs seam carving, and sends back carved versions
+- Content aware image scaling (seam carving) for message image attachments 
   - Supports scaling along both axes
   - Specify either flat pixel cuts or percentage scaling
-  - Separate commands for "forwards energy" and "backwards energy" mapping strategies
+  - Implements multiple seam carving scaling strategies
+- Interacts with users within the Discord client via text commands
 - Features artwork of our friendly mascot to respond to commands, Smoh!
+
+### Examples
 
 ### Installation Guide
  - [Git](https://git-scm.com/)
  - [Gradle](https://gradle.org/)
  - [Java 8](https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html)
 
-  1. Create a bot application through [Discord's Developer Portal](https://discord.com/developers/applications) and store the unique token
+  1. Create or use an existing bot application through [Discord's Developer Portal](https://discord.com/developers/applications) and store the unique token and add it to the desired server. Note that Smohbot requires send and recieve messages with attachments.
   2. Clone the repository using git
-```
-cd /projectpath
-git clone https://github.com/qin-andy/Smohbot.git
-```
+      ```
+      cd /projectpath
+      git clone https://github.com/qin-andy/Smohbot.git
+      ```
   3. ``cd`` into the newly created directory and use ``gradle install`` to collect dependencies
-  4. TODO
+  4. Run ``gradle shadow`` or ``gradlew shadow`` to generate the fat jar in ``build/libs/smohbot-shadowjar.jar``
+  5. Launch Smohbot using ``java -jar <smohbot jar location>`` and enter the token to associate it with the Discord application created in step 1
+  
+### Command Guide
+Call Smohbot on any channel on the server!
+ - ``!info``: help command, details command usage
+ - ``!carve x y``: default seam carving command for dimensions x and y
+ - ``!fcarve x y``: experimental forwards energy seam carving command
 
 ### Algorithm Details
 The implmentation of the "backward energy" seam carving algorithm (!carve) is built on the work of Shai Avidan and Ariel Shamir which was based on [an inital 2007 paper introducing seamcarving](https://dl.acm.org/doi/10.1145/1276377.1276390) as well as [their incredibly informative video](https://www.youtube.com/watch?v=6NcIJXTlugc) on the subject

@@ -76,7 +76,7 @@ public class CarveCommand extends Command {
                 return;
             }
 
-            if (xCut > 1) { // How does this handle cut sizes of 1? Chop off 1 pixel?
+            if (xCut > 1) {
                 xCut /= attachment.getWidth();
             }
             if (yCut > 1) {

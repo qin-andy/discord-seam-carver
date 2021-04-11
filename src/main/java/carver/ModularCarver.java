@@ -59,10 +59,14 @@ public class ModularCarver {
 
     // Handle ratio cuts as proportioned flat cuts
     public void carve(String imagePath, double xRatio, double yRatio) {
-        carve(imagePath, (int) (xRatio * width), (int) (yRatio * height));
+        acceptImage(imagePath);
+        width = image.getWidth();
+        height = image.getHeight();
+        carve((int) (xRatio * width), (int) (yRatio * height));
     }
 
-    public void carve(String imagePath, int xFlatCut, int yFlatCut) {
+    // Handle ratio for flat cuts
+    private void carve(String imagePath, int xFlatCut, int yFlatCut) {
         acceptImage(imagePath);
         carve(xFlatCut, yFlatCut);
     }
