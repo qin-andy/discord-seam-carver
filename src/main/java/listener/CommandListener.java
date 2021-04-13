@@ -17,6 +17,7 @@ public class CommandListener extends ListenerAdapter {
     private Map<String, Command> commands;
 
     public CommandListener() {
+        // TODO: parse command strings from Command.getString() methods
         super();
         commands = new HashMap<>();
         commands.put("!carve", new CarveCommand());

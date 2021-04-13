@@ -3,7 +3,6 @@ package commands;
 import carver.ModularCarver;
 import energy.BackwardsEnergy;
 import energy.ForwardsEnergy;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
