@@ -9,6 +9,11 @@ import java.awt.*;
 import java.io.File;
 
 public class InfoCommand extends Command {
+
+    public InfoCommand() {
+        name = "info";
+    }
+    // Sends an informative help command decorated with discsord embed
     public void execute(MessageChannel channel, User author, Message message) {
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle("Smohbot Info", "https://github.com/qin-andy/Smohbot");
@@ -16,8 +21,8 @@ public class InfoCommand extends Command {
         String desc =
                 "SMOHHH!!! (My name is Smohbot!)\n"
                         + "I am equipped with a chopping snout for content aware image scaling,"
-                        + " using seam carving!" +
-                        " Use a ``!carve`` with an image attachment to get started!\n ";
+                        + " using seam carving!"
+                        + " Use a ``!carve`` with an image attachment to get started!\n ";
         eb.addField("\n:cat: SMOHHHH! (HELLO!) :cat:", desc, false);
 
         desc =

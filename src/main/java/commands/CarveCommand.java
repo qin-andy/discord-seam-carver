@@ -21,9 +21,10 @@ public class CarveCommand extends Command {
         carvers = new ModularCarver[2];
         carvers[0] = new ModularCarver(new BackwardsEnergy(), new DefaultPathfinder());
         carvers[1] = new ModularCarver(new ForwardsEnergy(), new ForwardsPathfinder());
-
+        this.name = "carve";
     }
 
+    // Uses ModularCarver to carve an image
     public void execute(MessageChannel channel, User author, Message message) {
         if (message.getAttachments().isEmpty()) {
             sendSadSmoh(channel, "smoh.... (please send the image as an attachment!)");
