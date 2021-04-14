@@ -63,7 +63,7 @@ Call Smohbot on any channel on the server!
 ## Use Notes
  - Images are automatically compressed to fit within a 1000x1000 square to reduce seam carving time for larger images. This size can be changed or removed in the ModularCarver class's constant field ``MAX_SIZE``.
  - Smohbot requires permission to download, read, and write image files
- - 
+ - Picture assets found in the resources/assets use graphics assets folder (smoh_chop.gif, smoh_apology.jpg, smoh_help.jpg) are my own, do not reuse without express permission!
 ## Algorithm Details
 The implmentation of the "backward energy" seam carving algorithm (!carve) is built on the work of Shai Avidan and Ariel Shamir which was based on [an inital 2007 paper introducing seamcarving](https://dl.acm.org/doi/10.1145/1276377.1276390) as well as [their incredibly informative video](https://www.youtube.com/watch?v=6NcIJXTlugc) on the subject
 
