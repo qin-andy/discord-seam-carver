@@ -26,7 +26,7 @@ public class CarveCommand extends Command {
     // Uses ModularCarver to carve an image
     public void execute(MessageChannel channel, User author, Message message) {
         if (message.getAttachments().isEmpty()) {
-            sendSadSmoh(channel, "smoh.... (please send the image as an attachment!)");
+            sendSadSmoh(channel, "(please send the image as an attachment!)");
             return;
         }
 
@@ -35,7 +35,7 @@ public class CarveCommand extends Command {
         Message.Attachment attachment = message.getAttachments().get(0);
 
         if (!attachment.isImage()) {
-            sendSadSmoh(channel, "smoh.... (I don't recognize this file format..)");
+            sendSadSmoh(channel, "(I don't recognize this file format..)");
             return;
         }
 
@@ -43,7 +43,7 @@ public class CarveCommand extends Command {
             String path = "src/main/resources/images/download.png"; //TODO: Refactor string paths using globs
             attachment.downloadToFile(path).get();
 
-            channel.sendMessage("SMOH! (begins chopping)")
+            channel.sendMessage("(begins chopping!!)")
                     .addFile(new File("src/main/resources/assets/small_chop.gif")).queue();
 
             ModularCarver carver = null;
@@ -51,7 +51,7 @@ public class CarveCommand extends Command {
                 case "!carve" -> carver = carvers[0]; // See constructor
                 case "!fcarve" -> carver = carvers[1];
                 default -> {
-                    sendSadSmoh(channel, "smoh.... (I don't recognize that command.. try !help)");
+                    sendSadSmoh(channel, "(I don't recognize that command.. try !help)");
                     return;
                 }
             }
@@ -66,13 +66,13 @@ public class CarveCommand extends Command {
                     yCut = Double.parseDouble(args[2]);
                 }
                 default -> {
-                    sendSadSmoh(channel, "smoh.. (too many arguments!)");
+                    sendSadSmoh(channel, "(too many arguments!)");
                     return;
                 }
             }
 
             if (xCut >= attachment.getWidth() || yCut >= attachment.getHeight()) {
-                sendSadSmoh(channel, "smoh.. (cut size cannot be larger than the image!)");
+                sendSadSmoh(channel, "(cut size cannot be larger than the image!)");
                 return;
             }
 
@@ -84,23 +84,23 @@ public class CarveCommand extends Command {
             }
 
             if (xCut >= 0 && yCut >= 0) {
-                System.out.println("Smoo.. beginning ratio cut!");
+                System.out.println("beginning ratio cut!");
                 channel.sendTyping().queue();
                 carver.carve(path, xCut, yCut);
             } else {
-                sendSadSmoh(channel, "smoh.... (the cut numbers you gave dont make any sense..)");
+                sendSadSmoh(channel, "(the cut numbers you gave dont make any sense..)");
                 return;
             }
 
-            channel.sendMessage("SMOHOHO! (DONE!)")
+            channel.sendMessage("(DONE!)")
                     .addFile(new File("src/main/resources/images/carved.PNG")).queue();
 
         } catch (InterruptedException e) {
-            sendSadSmoh(channel, "smoh.... (something got interrupted!)");
+            sendSadSmoh(channel, "(something got interrupted!)");
         } catch (ExecutionException e) {
-            sendSadSmoh(channel, "smoh.... (something happened... (Execution Exception!))");
+            sendSadSmoh(channel, "(something happened... (Execution Exception!))");
         } catch (NumberFormatException e) {
-            sendSadSmoh(channel, "smoh.... (please specify valid numbers (doubles)!!)");
+            sendSadSmoh(channel, "(please specify valid numbers (doubles)!!)");
         }
     }
 

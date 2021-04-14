@@ -19,11 +19,11 @@ public class InfoCommand extends Command {
         eb.setTitle("Smohbot Info", "https://github.com/qin-andy/Smohbot");
         eb.setColor(Color.blue);
         String desc =
-                "SMOHHH!!! (My name is Smohbot!)\n"
+                "(My name is Smohbot!)\n"
                         + "I am equipped with a chopping snout for content aware image scaling,"
                         + " using seam carving!"
                         + " Use a ``!carve`` with an image attachment to get started!\n ";
-        eb.addField("\n:cat: SMOHHHH! (HELLO!) :cat:", desc, false);
+        eb.addField("\n:cat: (HELLO!) :cat:", desc, false);
 
         desc =
             "``!carve x y``: Default seam carving command. x and y can be in decimal percentages or pixels\n\n"
