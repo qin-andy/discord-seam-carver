@@ -12,9 +12,9 @@ image first when reducing image size.
   - Supports scaling along both axes
   - Specify either flat pixel cuts or percentage scaling
   - Implements multiple seam carving scaling strategies
-- Interacts with users within the Discord client via text commands
+- Interacts with users within the Discord client via text
 - Detailed info and error messages to guide users on how to use commands
-- Features artwork of our friendly mascot to respond to commands, Smoh!
+- Features artwork of a friendly cat mascot to respond to commands!
 
 ## Examples
 
