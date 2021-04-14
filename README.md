@@ -15,6 +15,7 @@ image first when reducing image size.
   - Specify either flat pixel cuts or percentage scaling
   - Implements multiple seam carving scaling strategies
 - Interacts with users within the Discord client via text commands
+- Detailed info and error messages to guide users on how to use commands
 - Features artwork of our friendly mascot to respond to commands, Smoh!
 
 ## Examples
